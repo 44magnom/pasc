@@ -13,27 +13,25 @@
 
     </div>
 
-    <div class="text-center mb-5">
 
-        <p class="text-muted">
-            Que souhaitez-vous faire ?
-        </p>
-
-    </div>
 
     <div class="row justify-content-center">
 
-        <div class="col-md-4 mb-3">
+@if($notesAReviser > 0)
 
-            <a href="{{ route('revision.generale') }}"
-               class="btn btn-primary btn-lg w-100 py-4">
+    <div class="col-md-4 mb-3">
 
-                📚<br>
-                Réviser
+        <a href="{{ route('revision.generale') }}"
+           class="btn btn-primary btn-lg w-100 py-4">
 
-            </a>
+            📚<br>
+            Réviser
 
-        </div>
+        </a>
+
+    </div>
+
+@endif
 
         <div class="col-md-4 mb-3">
 
