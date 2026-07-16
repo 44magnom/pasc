@@ -12,10 +12,21 @@
             {{ $chapitre->matiere->matiere }}
         </h3>
 
-        <p class="mb-0 fs-5">
-            {{ $chapitre->chapitre }}
-        </p>
+<div class="d-flex justify-content-center align-items-center gap-2">
 
+    <p class="mb-0 fs-5">
+        {{ $chapitre->chapitre }}
+    </p>
+
+    <a href="{{ route('chapitres.edit', $chapitre->id) }}"
+       class="text-white"
+       title="Modifier le chapitre">
+
+        <i class="bi bi-pencil-square"></i>
+
+    </a>
+
+</div>
     </div>
 
 </div>
