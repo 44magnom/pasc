@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Models;
+
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+    use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
+class Matiere extends Model
+{
+       protected $table = 'matieres';
+
+    protected $fillable = [
+        'matiere',
+        'nbr_note',
+    ];
+
+    public function chapitres(): HasMany
+    {
+        return $this->hasMany(Chapitre::class);
+    }
+
+
+
+public function notes(): HasManyThrough
+{
+    return $this->hasManyThrough(
+        Note::class,
+        Chapitre::class
+    );
+}
+}
