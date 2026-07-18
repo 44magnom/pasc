@@ -21,12 +21,15 @@ Route::resource('notes', NoteController::class);
 Route::get('/matieres/{matiere}/notes/create', [NoteController::class, 'create'])
     ->name('notes.creat');
 
+    
+    Route::get('/revision/jour', [RevisionController::class, 'revisionDuJour'])
+    ->name('revision.jour');
+    
+    Route::get('/revision/anciennes', [RevisionController::class, 'revisionAnciennes'])
+    ->name('revision.anciennes');
+    
     Route::get('/revision/{matiere}', [RevisionController::class, 'show'])
      ->name('revision.show');
-
-     Route::get('/revision-generale', [RevisionController::class, 'revisionGenerale'])
-    ->name('revision.generale');
-
 
 Route::get('/', [AccueilController::class, 'index'])->name('accueil');
 

@@ -2,10 +2,9 @@
 
     <div class="container-fluid">
 
-        <a class="navbar-brand"
-           href="{{ route('accueil') }}">
-            PASC
-        </a>
+<a class="navbar-brand text-success" href="{{ route('accueil') }}">
+    Nafar+
+</a>
 
         <button class="navbar-toggler"
                 type="button"
@@ -37,7 +36,15 @@
 
                     <a class="nav-link"
                        href="{{ route('emplois.index') }}">
-                        Emploi du temps
+                        Objectif du jour
+                    </a>
+
+                </li>
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ route('notes.create') }}">
+                        Ajouter une note
                     </a>
 
                 </li>

@@ -45,12 +45,13 @@
 
 </div>
 
-<div class="text-end mb-4 ">
+<div class="text-end my-4 ">
 <a href="{{ route('notes.creates', $chapitre->id) }}"
    class="btn btn-primary">
 
         ➕ Ajouter une note
     </a>
+    </div>
 
 <table class="table table-bordered align-middle">
 

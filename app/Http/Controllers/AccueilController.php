@@ -14,13 +14,17 @@ public function index()
 
     $matieres = Matiere::all();
 
-    $notesAReviser = Note::whereDate('prochaine_revision', '<=', today())
-                         ->count();
+$notesAReviser = Note::whereDate('prochaine_revision', today())->count();
+
+$notesEnRetard = Note::whereDate('prochaine_revision', '<', today())->count();
+
+
 
     return view('accueil', compact(
         'notes',
         'matieres',
-        'notesAReviser'
+        'notesAReviser',
+        'notesEnRetard'
     ));
 }
 }

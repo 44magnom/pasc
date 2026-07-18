@@ -4,22 +4,36 @@ namespace App\Http\Controllers;
 use App\Models\Matiere;
 use App\Models\Note;
 use App\Models\Chapitre;
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 
 class RevisionController extends Controller
 {
 
-public function revisionGenerale()
+public function revisionDuJour()
 {
-$notes = Note::with('chapitre.matiere')
-    ->whereDate('prochaine_revision', '<=', today())
-    ->inRandomOrder()
-    ->get();
+    $notes = Note::with('chapitre.matiere')
+        ->whereDate('prochaine_revision', today())
+        ->inRandomOrder()
+        ->get();
 
-return view('matieres.revisiongenerale', compact('notes'));
+    $typeRevision = 'jour';
+
+    return view('matieres.revisiongenerale', compact('notes', 'typeRevision'));
 }
 
+public function revisionAnciennes()
+{
+    $notes = Note::with('chapitre.matiere')
+        ->whereDate('prochaine_revision', '<', today())
+        ->inRandomOrder()
+        ->get();
+
+    $typeRevision = 'anciennes';
+
+    return view('matieres.revisiongenerale', compact('notes', 'typeRevision'));
+}
 
 public function show($id)
 {
@@ -47,9 +61,17 @@ public function chapitre($id)
     return view('matieres.revisiongenerale', compact('notes', 'chapitre'));
 }
 
-public function valider()
+
+
+
+
+public function valider(Request $request)
 {
-    $notes = Note::whereDate('prochaine_revision', '<=', today())->get();
+    if ($request->type === 'jour') {
+        $notes = Note::whereDate('prochaine_revision', today())->get();
+    } else {
+        $notes = Note::whereDate('prochaine_revision', '<', today())->get();
+    }
 
     foreach ($notes as $note) {
 
@@ -57,13 +79,26 @@ public function valider()
 
         $intervalle = $this->intervalle($note->nombre_revision);
 
-        $note->prochaine_revision = today()->addDays($intervalle);
+        $dateRevision = Carbon::parse($note->prochaine_revision);
+
+        // Nombre de jours de retard
+        $retard = $dateRevision->diffInDays(today());
+
+        if ($retard <= 1) {
+            // Aujourd'hui ou seulement 1 jour de retard
+            $dateReference = $dateRevision;
+        } else {
+            // Plus d'un jour de retard : on repart d'aujourd'hui
+            $dateReference = today();
+        }
+
+        $note->prochaine_revision = $dateReference->copy()->addDays($intervalle);
 
         $note->save();
     }
 
     return redirect()->route('accueil')
-        ->with('success', 'Révision validée.');
+        ->with('success', 'Révision validée avec succès.');
 }
 
 private function intervalle($revision)

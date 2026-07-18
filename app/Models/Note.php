@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Note extends Model
 {
+
+protected $casts = [
+    'prochaine_revision' => 'date',
+];
     protected $fillable = [
         'chapitre_id',
         'information',

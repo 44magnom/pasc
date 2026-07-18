@@ -21,6 +21,7 @@
     @include('front.menubas')
     @include('front.offcanvasmatieres')
     @include('notes.modal')
+    @include('notes.modalconseil')
     @stack('styles')
     @stack('scripts')
 

@@ -6,43 +6,66 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3 revision-header">
 
-    <p class="mb-0 revision-title">
+<div class="d-flex align-items-center gap-2">
 
-        @if(Route::is('revision.generale'))
+<p class="mb-0 revision-title">
 
-            Révision générale
+    @if(Route::is('revision.jour'))
 
-        @else
+        Révision des notes du jour
 
-            Révision :
-            {{ $notes->first()?->chapitre?->matiere?->matiere ?? 'Aucune matière' }},
-            {{ $notes->first()?->chapitre?->chapitre ?? 'Aucun chapitre' }}
+    @elseif(Route::is('revision.anciennes'))
 
-        @endif
+        Révision des notes en retard
 
-    </p>
+    @else
 
-
-    @if(Route::is('revision.generale'))
-
-        <form id="formValidation"
-              action="{{ route('revision.valider') }}"
-              method="POST">
-
-            @csrf
-
-            <button type="button"
-                    class="btn btn-link p-0 btn-validation"
-                    id="btnValider"
-                    title="Valider la session">
-
-                <i class="bi bi-check-circle-fill fs-4"></i>
-
-            </button>
-
-        </form>
+        Révision :
+        {{ $notes->first()?->chapitre?->matiere?->matiere ?? 'Aucune matière' }},
+        {{ $notes->first()?->chapitre?->chapitre ?? 'Aucun chapitre' }}
 
     @endif
+
+</p>
+
+    <button
+        type="button"
+        class="btn btn-link p-0 text-secondary"
+        data-bs-toggle="modal"
+        data-bs-target="#conseilsModal"
+        title="Conseils d'apprentissage">
+
+        <i class="bi bi-info-circle fs-5"></i>
+
+    </button>
+
+</div>
+
+
+@if(Route::is('revision.jour') || Route::is('revision.anciennes'))
+
+<form id="formValidation"
+      action="{{ route('revision.valider') }}"
+      method="POST">
+
+    @csrf
+
+    <input type="hidden"
+           name="type"
+           value="{{ Route::is('revision.jour') ? 'jour' : 'anciennes' }}">
+
+    <button type="button"
+            class="btn btn-link p-0 btn-validation"
+            id="btnValider"
+            title="Valider la session">
+
+        <i class="bi bi-check-circle-fill fs-4"></i>
+
+    </button>
+
+</form>
+
+@endif
 
 </div>
 
@@ -94,8 +117,8 @@
 </div>
 
 </div>
-
 @endif
+@include('notes.speech')
 </div>
 
 <div class="floating-actions">
@@ -393,10 +416,19 @@ if (notes.length > 0) {
 @push('styles')
 
 <style>
+/* Ordinateur et tablette */
 
-@media (max-width: 576px) {
+.carte-revision{
+    max-width: 800px;
+    margin: 2rem auto;
+}
 
-    .carte-revision {
+/* Mobile */
+
+@media (max-width: 576px){
+
+    .carte-revision{
+        max-width: none;
         width: 100vw;
         margin-left: calc(-50vw + 50%);
         margin-right: calc(-50vw + 50%);
@@ -435,5 +467,112 @@ if (notes.length > 0) {
 }
 
 </style>
+
+@endpush
+
+@push('scripts')
+<script>
+
+/* ==========================
+   LECTURE AUDIO
+========================== */
+
+let stopLecture = false;
+let repetition = 0;
+
+// Convertit le HTML CKEditor en texte lisible
+function htmlVersTexte(html) {
+
+    html = html.replace(/<\/p>/gi, ". ");
+    html = html.replace(/<br\s*\/?>/gi, ". ");
+    html = html.replace(/<\/div>/gi, ". ");
+    html = html.replace(/<\/li>/gi, ". ");
+    html = html.replace(/<\/h[1-6]>/gi, ". ");
+
+    const div = document.createElement("div");
+    div.innerHTML = html;
+
+    return div.textContent.replace(/\s+/g, " ").trim();
+}
+
+// Lance la lecture
+function lancerLecture() {
+
+    stopLecture = false;
+    repetition = 0;
+
+    speechSynthesis.cancel();
+
+    lireCarte();
+}
+
+// Lit la carte
+function lireCarte() {
+
+    if (stopLecture) return;
+
+    let texte = htmlVersTexte(notes[index].recto);
+
+    // Si la réponse est visible, on la lit aussi
+    if (reponseVisible) {
+
+        texte += ". Réponse. " +
+                 htmlVersTexte(notes[index].verso);
+
+    }
+
+    const speech = new SpeechSynthesisUtterance(texte);
+
+    speech.lang = "fr-FR";
+
+    // vitesse
+    speech.rate = 1;
+
+    speech.pitch = 1;
+    speech.volume = 1;
+
+    speech.onend = function () {
+
+        if (stopLecture) return;
+
+        repetition++;
+
+        const max = document.getElementById("repeat").value;
+
+        if (max === "infini") {
+
+            lireCarte();
+
+        } else if (repetition < parseInt(max)) {
+
+            lireCarte();
+
+        }
+
+    };
+
+    speechSynthesis.speak(speech);
+
+}
+
+// Arrêter
+function arreterLecture() {
+
+    stopLecture = true;
+
+    speechSynthesis.cancel();
+
+}
+
+/* ==========================
+   BOUTONS
+========================== */
+
+document.getElementById("btnLecture")
+.addEventListener("click", lancerLecture);
+
+document.getElementById("btnStop")
+.addEventListener("click", arreterLecture);
+</script>
 
 @endpush

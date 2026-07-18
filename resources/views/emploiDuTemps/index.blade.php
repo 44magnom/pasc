@@ -26,7 +26,12 @@ $pourcentage = $total > 0
         </h3>
 
         <p class="text-muted mb-0">
-            Acquérir de nouvelles connaissances
+            Acquérir de nouvelles connaissances :
+
+        </p>
+        <p class="text-muted mb-0">
+   
+            Faire au moins une note sur chacune des matières suivantes 
         </p>
 
     </div>
