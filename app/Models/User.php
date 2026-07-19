@@ -20,9 +20,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'telephone',
         'email',
         'password',
     ];
+    public function matieres()
+{
+    return $this->hasMany(Matiere::class);
+}
 
     /**
      * The attributes that should be hidden for serialization.

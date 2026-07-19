@@ -61,6 +61,27 @@
 
                     </a>
 
+                    </li>
+                    @auth
+    <li class="nav-item">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+
+            <button type="submit" class="nav-link btn btn-link p-0 border-0">
+                Déconnexion
+            </button>
+        </form>
+    </li>
+@endauth
+
+@guest
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('login') }}">
+            Connexion
+        </a>
+    </li>
+@endguest
+
                     <ul class="dropdown-menu">
 
                         <li>

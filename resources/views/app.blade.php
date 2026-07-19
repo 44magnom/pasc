@@ -19,7 +19,7 @@
     </div>
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     @include('front.menubas')
-    @include('front.offcanvasmatieres')
+   
     @include('notes.modal')
     @include('notes.modalconseil')
     @stack('styles')

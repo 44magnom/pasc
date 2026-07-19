@@ -11,10 +11,11 @@ class Matiere extends Model
 {
        protected $table = 'matieres';
 
-    protected $fillable = [
-        'matiere',
-        'nbr_note',
-    ];
+protected $fillable = [
+    'user_id',
+    'matiere',
+    'nbr_note',
+];
 
     public function chapitres(): HasMany
     {
@@ -29,5 +30,10 @@ public function notes(): HasManyThrough
         Note::class,
         Chapitre::class
     );
+}
+
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
 }

@@ -39,6 +39,7 @@ public function store(Request $request)
 
     Matiere::create([
         'matiere' => $request->matiere,
+           'user_id' => auth()->id(),
     ]);
 
   $matieres = Matiere::all()->reverse();
@@ -76,7 +77,8 @@ public function edit($id)
         public function update(Request $request, $id)
         {
             $request->validate([
-                'matiere' => 'required|max:255'
+                'matiere' => 'required|max:255',
+                   'user_id' => auth()->id(),
             ]);
 
             $matiere = Matiere::findOrFail($id);

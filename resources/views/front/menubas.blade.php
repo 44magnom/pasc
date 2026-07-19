@@ -17,7 +17,7 @@
 
     </a>
 
-    <a href="#"
+   <a href="{{ route('dashboard') }}"
        class="menu-item">
 
         <i class="bi bi-person"></i>

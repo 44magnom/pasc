@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
             $table->string('matiere');
+            $table->foreignId('user_id')
+      ->constrained()
+      ->cascadeOnDelete();
                 $table->integer('nbr_note')->default(0);
             $table->timestamps();
         });
