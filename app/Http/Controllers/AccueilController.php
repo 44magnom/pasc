@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Matiere;
 use App\Models\Note;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
@@ -10,15 +11,29 @@ class AccueilController extends Controller
 {
 public function index()
 {
-    $notes = Note::all();
+    if (!Auth::check()) {
+        return view('front.bienvenu');
+    }
 
-    $matieres = Matiere::all();
+    $user = Auth::user();
 
-$notesAReviser = Note::whereDate('prochaine_revision', today())->count();
+    $matieres = $user->matieres()->with(['chapitres', 'notes'])->get();
 
-$notesEnRetard = Note::whereDate('prochaine_revision', '<', today())->count();
+    $notes = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+        $query->where('user_id', $user->id);
+    })->get();
 
+    $notesAReviser = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->whereDate('prochaine_revision', today())
+        ->count();
 
+    $notesEnRetard = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->whereDate('prochaine_revision', '<', today())
+        ->count();
 
     return view('accueil', compact(
         'notes',
