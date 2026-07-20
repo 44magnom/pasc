@@ -13,6 +13,7 @@ use App\Http\Controllers\RevisionController;
 
 // Accueil
 Route::get('/', [AccueilController::class, 'index'])->name('accueil');
+Route::view('/bienvenu', 'front.bienvenu')->name('bienvenu');
 
 // Routes protégées
 Route::middleware('auth')->group(function () {
@@ -61,8 +62,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/emplois/{emploi}/validation', [EmploiDuTempsController::class, 'toggleValidation'])
         ->name('emplois.validation');
-Route::get('/revisionr/jour', [RevisionController::class, 'revisionDuJour'])
+Route::get('/revision1/jour', [RevisionController::class, 'revisionDuJour'])
     ->name('revision.jour');
+Route::get('/revision2/jour', [RevisionController::class, 'revisionAnciennes'])
+    ->name('revision.anciennes');
 });
 
 

@@ -16,6 +16,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('telephone')->unique();
             $table->string('email')->unique();
+                // Statut du compte
+    $table->boolean('is_active')->default(true);
+
+    // Abonnement
+    $table->boolean('is_subscribed')->default(false);
+
+
+    // Rôle
+            $table->enum('role', ['user', 'admin'])->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
