@@ -32,7 +32,7 @@
 
     <!-- Accordéon -->
 
-    <div class="accordion mb-4" id="accordionMatiere">
+    <!-- <div class="accordion mb-4" id="accordionMatiere">
 
         <div class="accordion-item">
 
@@ -86,7 +86,7 @@
 
         </div>
 
-    </div>
+    </div> -->
 
     <!-- Recherche -->
 
