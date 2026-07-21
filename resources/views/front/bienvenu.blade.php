@@ -13,7 +13,7 @@
                 <!-- En-tête -->
                 <div class="text-center py-5" style="background-color:#EFE5D7;">
 
-                    <h1 class="display-4 fw-bold mb-3" style="color:#5A3E85;">
+                    <h1 class="display-4 fw-bold mb-3" style="color:#654321;">
                         NafarBox
                     </h1>
 
@@ -27,9 +27,9 @@
                 <div class="card-body p-5 text-center" style="background:#FFFDF9;">
 
                     <i class="bi bi-stars mb-4"
-                       style="font-size:70px;color:#6F42C1;"></i>
+                       style="font-size:70px;color:#654321;"></i>
 
-                    <h2 class="fw-bold mb-4" style="color:#4A3F35;">
+                    <h2 class="fw-bold mb-4" style="color:#654321;">
                         Devenez chaque jour une meilleure version de vous-même.
                     </h2>
 
@@ -54,7 +54,7 @@
 
                         <a href="{{ route('register') }}"
                            class="btn btn-lg text-white fw-semibold"
-                           style="background-color:#6F42C1;">
+                           style="background-color:#654321;">
 
                             <i class="bi bi-person-plus-fill me-2"></i>
 

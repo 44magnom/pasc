@@ -2,7 +2,7 @@
 
     <div class="container-fluid">
 
-<a class="navbar-brand text-success" href="{{ route('accueil') }}">
+<a class="navbar-brand" href="{{ route('accueil') }}" style="color:#654321;">
     NafarBox
 </a>
 

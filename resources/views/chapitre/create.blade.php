@@ -5,7 +5,8 @@
 <div class="container mt-4">
 
     <!-- Bannière -->
-    <div class="card bg-primary text-white shadow mb-4">
+<div class="card shadow mb-4"
+     style="background-color:#F8F3EB; color:#3E3E3E; border:1px solid #8B6B4A;">
 
  <div class="card-body text-center">
 
@@ -113,7 +114,8 @@
 
     @empty
 
-        <div class="alert alert-info">
+        <div class="alert border-0"
+     style="background-color:#F8F3EB; color:#6B5B4B;">
             Aucun chapitre.
         </div>
 

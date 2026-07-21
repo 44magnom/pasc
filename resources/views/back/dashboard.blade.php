@@ -5,7 +5,7 @@
 <div class="container mt-4">
 
     <!-- Bannière -->
-    <div class="card bg-primary text-white shadow mb-4">
+<div class="card shadow mb-4 border-0" style="background-color:#654321; color:white;">
 
         <div class="card-body text-center">
 
@@ -93,8 +93,7 @@
     </div>
 
     <!-- Liste -->
-
-    <h5>Mes matières</h5>
+<h6 class="fw-semibold text-secondary mb-3">Mes matières</h6>
 
     @forelse($matieres as $matiere)
 
@@ -105,7 +104,7 @@
 
                 <div class="card-body">
 
-                    <strong class="text-primary matiere-name">
+                  <strong class="matiere-name" style="color:#654321;">
 
                         {{ $matiere->matiere }}
 
