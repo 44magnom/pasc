@@ -18,7 +18,7 @@
                     </h1>
 
                     <p class="fs-5 mb-0" style="color:#5E5145;">
-                        La plateforme qui vous accompagne vers votre meilleure version.
+                        La plateforme qui vous accompagne vers l'excellence.
                     </p>
 
                 </div>

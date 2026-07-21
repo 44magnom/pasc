@@ -1,10 +1,8 @@
 <div class="bottom-menu">
 
-    <a href="#"
+    <a    href="{{ route('emplois.index') }}"
        class="menu-item"
-       data-bs-toggle="offcanvas"
-       data-bs-target="#offcanvasMatieres"
-       aria-controls="offcanvasMatieres">
+>
 
         <i class="bi bi-book"></i>
 
