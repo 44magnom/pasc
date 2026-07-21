@@ -3,7 +3,7 @@
     <div class="container-fluid">
 
 <a class="navbar-brand text-success" href="{{ route('accueil') }}">
-    Nafar+
+    NafarBox
 </a>
 
         <button class="navbar-toggler"

@@ -14,7 +14,7 @@
                 <div class="text-center py-5" style="background-color:#EFE5D7;">
 
                     <h1 class="display-4 fw-bold mb-3" style="color:#5A3E85;">
-                        Nafar+
+                        NafarBox
                     </h1>
 
                     <p class="fs-5 mb-0" style="color:#5E5145;">
@@ -35,7 +35,7 @@
 
                     <p class="lead text-muted mb-4">
 
-                        Nafar+ est une plateforme conçue pour vous aider à apprendre,
+                        NafarBox est une plateforme conçue pour vous aider à apprendre,
                         mémoriser et progresser durablement dans tous les domaines
                         dans lesquels vous souhaitez vous développer.
 
@@ -45,7 +45,7 @@
 
                         Que vous prépariez un examen, un concours, une certification,
                         ou que vous souhaitiez simplement acquérir de nouvelles
-                        compétences, Nafar+ vous aide à organiser vos connaissances,
+                        compétences, NafarBox vous aide à organiser vos connaissances,
                         à les réviser au bon moment et à progresser continuellement.
 
                     </p>
@@ -81,7 +81,7 @@
 
                     <small class="text-muted">
 
-                        © {{ date('Y') }} Nafar+ • Apprendre aujourd'hui, réussir demain.
+                        © {{ date('Y') }} NafarBox • Apprendre aujourd'hui, réussir demain.
 
                     </small>
 
