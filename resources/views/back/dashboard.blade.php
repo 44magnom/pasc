@@ -5,28 +5,30 @@
 <div class="container mt-4">
 
     <!-- Bannière -->
-<div class="card shadow mb-4 border-0" style="background-color:#654321; color:white;">
+<div class="card shadow-sm mb-4"
+     style="background-color:#F8F3EB; border:1px solid #D2B48C;">
 
-        <div class="card-body text-center">
+    <div class="card-body text-center">
 
-            <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center align-items-center">
 
-                <h3 class="mb-0 me-2">
-                    Liste des matières
-                </h3>
+            <h3 class="mb-0 me-2 fw-semibold" style="color:#654321;">
+                Liste des matières
+            </h3>
 
-                <a href="{{ route('matieres.create') }}"
-                   class="text-white">
+            <a href="{{ route('matieres.create') }}"
+               style="color:#654321;"
+               title="Ajouter une matière">
 
-                    <i class="bi bi-pencil-square fs-4"></i>
+                <i class="bi bi-plus-circle-fill fs-4"></i>
 
-                </a>
-
-            </div>
+            </a>
 
         </div>
 
     </div>
+
+</div>
 
     <!-- Accordéon -->
 
@@ -48,34 +50,39 @@
             </h2>
 
             <div id="ajoutMatiere"
-                 class="accordion-collapse collapse">
+     class="accordion-collapse collapse">
 
-                <div class="accordion-body">
+    <div class="accordion-body"
+         style="background-color:#FDFBF8;">
 
-                    <form action="{{ route('matieres.store') }}"
-                          method="POST">
+        <form action="{{ route('matieres.store') }}"
+              method="POST">
 
-                        @csrf
+            @csrf
 
-                        <div class="mb-3">
+            <div class="mb-3">
 
-                            <input type="text"
-                                   class="form-control"
-                                   name="matiere"
-                                   placeholder="Nom de la matière"
-                                   required>
-
-                        </div>
-
-                        <button class="btn btn-primary">
-                            Enregistrer
-                        </button>
-
-                    </form>
-
-                </div>
+                <input type="text"
+                       class="form-control"
+                       name="matiere"
+                       placeholder="Nom de la matière"
+                       style="border:1px solid #D2B48C;"
+                       required>
 
             </div>
+
+            <button type="submit"
+                    class="btn"
+                    style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
+                <i class="bi bi-check-circle me-1"></i>
+                Enregistrer
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
 
         </div>
 
@@ -83,14 +90,14 @@
 
     <!-- Recherche -->
 
-    <div class="mb-4">
+    <!-- <div class="mb-4">
 
         <input type="text"
                id="searchMatiere"
                class="form-control"
                placeholder="🔍 Rechercher une matière...">
 
-    </div>
+    </div> -->
 
     <!-- Liste -->
 <h6 class="fw-semibold text-secondary mb-3">Mes matières</h6>

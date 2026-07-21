@@ -4,28 +4,34 @@
 
 <div class="container mt-4">
 
-    <!-- Bannière -->
-    <div class="card bg-primary text-white shadow mb-4">
-        <div class="card-body text-center">
+<!-- Bannière -->
+<div class="card shadow mb-4"
+     style="background-color:#F8F3EB; border:1px solid #D2B48C;">
 
-            <h4 class="mb-1">
-                {{ $chapitre->matiere->matiere }}
-            </h4>
+    <div class="card-body text-center">
 
-            <p class="mb-0 fs-5">
-                {{ $chapitre->chapitre }}
-            </p>
+        <h4 class="mb-1 fw-bold" style="color:#654321;">
+            {{ $chapitre->matiere->matiere }}
+        </h4>
 
-        </div>
+        <p class="mb-0" style="font-size:1.05rem; color:#654321;">
+            {{ $chapitre->chapitre }}
+        </p>
+
     </div>
 
-    <h4>Ajouter une note</h4>
+</div>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+<h4 class="fw-semibold mb-4" style="color:#654321;">
+    Ajouter une note
+</h4>
+@if(session('success'))
+    <div class="alert"
+         style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        {{ session('success') }}
+    </div>
+@endif
 
     <form action="{{ route('notes.store') }}"
           method="POST"
@@ -87,9 +93,12 @@
 
         <div class="text-end">
 
-            <button type="submit" class="btn btn-primary">
-                Enregistrer
-            </button>
+<button type="submit"
+        class="btn"
+        style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
+    <i class="bi bi-check-circle me-1"></i>
+    Enregistrer
+</button>
 
         </div>
 
