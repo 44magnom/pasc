@@ -24,56 +24,54 @@
                 </div>
 
                 <!-- Corps -->
-                <div class="card-body p-5 text-center" style="background:#FFFDF9;">
+   <!-- Corps -->
+<div class="card-body p-0" style="background:#FFFDF9;">
+<div>
 
-                    <i class="bi bi-stars mb-4"
-                       style="font-size:70px;color:#654321;"></i>
 
-                    <h2 class="fw-bold mb-4" style="color:#654321;">
-                        Devenez chaque jour une meilleure version de vous-même.
-                    </h2>
+<img src="{{ asset('images/box1.jpg') }}"
+     alt="Nafarbox"
+     class="w-100 d-block">
+    <div class="p-5 text-center">
 
-                    <p class="lead text-muted mb-4">
+        <!-- Icône -->
+        <i class="bi bi-stars d-block mb-4"
+           style="font-size:50px; color:#654321;"></i>
 
-                        NafarBox est une plateforme conçue pour vous aider à apprendre,
-                        mémoriser et progresser durablement dans tous les domaines
-                        dans lesquels vous souhaitez vous développer.
+        <h2 class="fw-bold mb-4" style="color:#654321;">
+            Devenez chaque jour une meilleure version de vous-même.
+        </h2>
 
-                    </p>
+        <p class="lead text-muted mb-4">
+            NafarBox est une plateforme conçue pour vous aider à apprendre,
+            mémoriser et progresser durablement.
+        </p>
 
-                    <p class="text-muted mb-5">
+        <p class="text-muted mb-5">
+            Préparez vos examens, concours et certifications grâce
+            à la méthode de révision espacée.
+        </p>
 
-                        Que vous prépariez un examen, un concours, une certification,
-                        ou que vous souhaitiez simplement acquérir de nouvelles
-                        compétences, NafarBox vous aide à organiser vos connaissances,
-                        à les réviser au bon moment et à progresser continuellement.
+        <div class="d-grid gap-3 col-md-7 mx-auto">
 
-                    </p>
+            <a href="{{ route('register') }}"
+               class="btn btn-lg text-white fw-semibold"
+               style="background:#654321;">
+                <i class="bi bi-person-plus-fill me-2"></i>
+                Créer un compte
+            </a>
 
-                    <div class="d-grid gap-3 col-md-7 mx-auto">
+            <a href="{{ route('login') }}"
+               class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                J'ai déjà un compte
+            </a>
 
-                        <a href="{{ route('register') }}"
-                           class="btn btn-lg text-white fw-semibold"
-                           style="background-color:#654321;">
+        </div>
 
-                            <i class="bi bi-person-plus-fill me-2"></i>
+    </div>
 
-                            Créer un compte
-
-                        </a>
-
-                        <a href="{{ route('login') }}"
-                           class="btn btn-outline-secondary btn-lg">
-
-                            <i class="bi bi-box-arrow-in-right me-2"></i>
-
-                            J'ai déjà un compte
-
-                        </a>
-
-                    </div>
-
-                </div>
+</div>
 
                 <!-- Pied -->
                 <div class="text-center py-3"
