@@ -15,8 +15,10 @@ return new class extends Migration
              $table->id();
 
             $table->foreignId('matiere_id')
+            
           ->constrained()
           ->cascadeOnDelete();
+              $table->boolean('is_revised')->default(true);
 
     $table->string('chapitre');
             $table->timestamps();

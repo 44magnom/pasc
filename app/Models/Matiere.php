@@ -14,6 +14,8 @@ class Matiere extends Model
 protected $fillable = [
     'user_id',
     'matiere',
+    'is_revised',
+    
     'nbr_note',
 ];
 

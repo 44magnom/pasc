@@ -13,6 +13,11 @@
     <h3 class="mb-0">
         {{ $matiere->matiere }}
     </h3>
+<a href="{{ route('chapitres.index', $matiere->id) }}"
+   style="color:#654321;"
+   title="Gérer les chapitres">
+    <i class="bi bi-gear-fill fs-4"></i>
+</a>
 
 </div>
         

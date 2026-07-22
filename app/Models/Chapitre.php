@@ -10,7 +10,8 @@ class Chapitre extends Model
 {
     protected $fillable = [
         'matiere_id',
-        'chapitre'
+        'chapitre',
+        'is_revised'
     ];
 
     public function matiere(): BelongsTo

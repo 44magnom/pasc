@@ -20,7 +20,7 @@
                style="color:#654321;"
                title="Ajouter une matière">
 
-                <i class="bi bi-plus-circle-fill fs-4"></i>
+        <i class="bi bi-gear-fill fs-4"></i>
 
             </a>
 

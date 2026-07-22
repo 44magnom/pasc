@@ -15,6 +15,7 @@ protected $casts = [
         'chapitre_id',
         'information',
         'recto',
+        'is_revised',
         'verso',
         'nombre_revision',
         'prochaine_revision',

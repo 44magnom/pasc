@@ -68,7 +68,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/revision1/jour', [RevisionController::class, 'revisionDuJour'])
     ->name('revision.jour');
 
-    
+    Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
+    ->name('chapitres.index');
 
 
 

@@ -12,10 +12,13 @@ class ChapitreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+public function index(Matiere $matiere)
+{
+    $chapitres = $matiere->chapitres()->orderBy('chapitre')->get();
+    dd($matiere);
+
+    return view('chapitre.gerer', compact('matiere', 'chapitres'));
+}
 
     /**
      * Show the form for creating a new resource.

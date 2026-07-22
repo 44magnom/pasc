@@ -13,6 +13,7 @@ return new class extends Migration
     {
 Schema::create('notes', function (Blueprint $table) {
     $table->id();
+        $table->boolean('is_revised')->default(true);
 
     $table->foreignId('chapitre_id')
           ->constrained()
