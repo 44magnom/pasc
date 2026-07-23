@@ -1,4 +1,3 @@
-
 @extends('app')
 
 @section('content')
@@ -17,68 +16,132 @@ $pourcentage = $total > 0
 
 @endphp
 
+<style>
+    .nafar-card{
+        background:#FFFDF9;
+        border:2px solid #C8A97E;
+        border-radius:18px;
+    }
+
+    .nafar-title{
+        color:#654321;
+    }
+
+    .nafar-text{
+        color:#7A6754;
+    }
+
+    .nafar-progress{
+        height:14px;
+        background:#F1E7D8;
+        border-radius:50px;
+    }
+
+    .nafar-progress .progress-bar{
+        background:linear-gradient(90deg,#8B5E3C,#C8A97E);
+        border-radius:50px;
+    }
+
+    .nafar-btn{
+        background:#8B5E3C;
+        color:#fff;
+        border:none;
+    }
+
+    .nafar-btn:hover{
+        background:#6F472C;
+        color:#fff;
+    }
+
+    .form-check-input:checked{
+        background:#8B5E3C;
+        border-color:#8B5E3C;
+    }
+
+    .matiere-card{
+        background:#FFFDF9;
+        border:2px solid #E6D3B3;
+        border-radius:18px;
+        transition:.25s;
+    }
+
+    .matiere-card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 .5rem 1rem rgba(0,0,0,.10)!important;
+    }
+
+    .matiere-link{
+        color:#654321;
+        text-decoration:none;
+    }
+
+    .matiere-link:hover{
+        color:#8B5E3C;
+    }
+</style>
+
 <div class="container mt-4">
 
+    {{-- Objectif --}}
     <div class="text-center mb-4">
 
-        <h3 class="fw-bold mb-1">
-            Objectif du jour
+        <h3 class="fw-bold mb-2 nafar-title">
+            🎯 Objectif du jour
         </h3>
 
-        <p class="text-muted mb-0">
-            Acquérir de nouvelles connaissances :
-
+        <p class="mb-1 nafar-text">
+            Acquérir de nouvelles connaissances.
         </p>
-        <p class="text-muted mb-0">
-   
-            Faire au moins une note sur chacune des matières suivantes 
+
+        <p class="mb-0 nafar-text">
+            Faire au moins une note sur chacune des matières suivantes.
         </p>
 
     </div>
 
-    {{-- Barre de progression --}}
-    <div class="card shadow-sm mb-4">
+    {{-- Progression quotidienne --}}
+    <div class="card nafar-card shadow-sm mb-4">
 
         <div class="card-body">
 
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-                <span class="fw-semibold">
+                <span class="fw-semibold nafar-title">
                     Progression
                 </span>
 
-                <span class="fw-bold text-success">
+                <span class="fw-bold" style="color:#8B5E3C;">
                     {{ $pourcentage }} %
                 </span>
 
             </div>
 
-            <div class="progress" style="height:12px;">
+            <div class="progress nafar-progress">
 
-                <div class="progress-bar bg-success"
-                     role="progressbar"
-                     style="width: {{ $pourcentage }}%;"
-                     aria-valuenow="{{ $pourcentage }}"
-                     aria-valuemin="0"
-                     aria-valuemax="100">
+                <div class="progress-bar"
+                     style="width:{{ $pourcentage }}%;">
 
                 </div>
 
             </div>
 
-            <small class="text-muted d-block mt-2">
+            <small class="d-block mt-3 nafar-text">
 
-                {{ $validees }} matière(s) validée(s)
+                <strong>{{ $validees }}</strong> matière(s) validée(s)
                 sur
-                {{ $total }}
+                <strong>{{ $total }}</strong>
 
             </small>
 
             @if($pourcentage == 100 && $total > 0)
 
-                <div class="alert alert-success mt-3 mb-0">
-🎉 Excellent travail !
-Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette lancée !
+                <div class="alert border-0 rounded-4 mt-4 mb-0"
+                     style="background:#F8F2E8;color:#654321;border-left:5px solid #8B5E3C;">
+
+                    <strong>🎉 Félicitations !</strong><br>
+
+                    Vous avez atteint votre objectif quotidien d'apprentissage.
+                    Continuez sur cette belle lancée !
 
                 </div>
 
@@ -88,10 +151,11 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
     </div>
 
-    {{-- Messages --}}
+    {{-- Message --}}
     @if(session('success'))
 
-        <div class="alert alert-success">
+        <div class="alert border-0 shadow-sm rounded-4"
+             style="background:#F8F2E8;color:#654321;border-left:5px solid #8B5E3C;">
 
             {{ session('success') }}
 
@@ -99,10 +163,11 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
     @endif
 
-    {{-- Aucune matière --}}
+    {{-- Aucun emploi --}}
     @if($emplois->isEmpty())
 
-        <div class="alert alert-info text-center">
+        <div class="alert border-0 shadow-sm rounded-4 text-center"
+             style="background:#FFF8EE;color:#654321;border-left:5px solid #C8A97E;">
 
             <h5 class="mb-2">
                 🎉 Aucun travail prévu aujourd'hui
@@ -117,10 +182,9 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
     @else
 
         {{-- Liste des matières --}}
-
         @foreach($emplois as $emploi)
 
-            <div class="card shadow-sm mb-3">
+            <div class="card matiere-card shadow-sm mb-3">
 
                 <div class="card-body">
 
@@ -128,10 +192,10 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
                         <div class="flex-grow-1">
 
-                            <a href="{{ route('chapitres.createForMatiere', $emploi->matiere_id) }}"
-                               class="text-decoration-none">
+                            <a href="{{ route('chapitres.createForMatiere',$emploi->matiere_id) }}"
+                               class="matiere-link">
 
-                                <h5 class="text-primary mb-1">
+                                <h5 class="fw-bold mb-1">
 
                                     {{ $emploi->matiere->matiere }}
 
@@ -141,7 +205,7 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
                             @if($emploi->commentaire)
 
-                                <p class="text-muted mb-0">
+                                <p class="mb-0 nafar-text">
 
                                     {{ $emploi->commentaire }}
 
@@ -153,7 +217,7 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
                         <div class="ms-3">
 
-                            <form action="{{ route('emplois.validation', $emploi->id) }}"
+                            <form action="{{ route('emplois.validation',$emploi->id) }}"
                                   method="POST"
                                   onclick="event.stopPropagation();">
 
@@ -179,10 +243,11 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
     @endif
 
+    {{-- Bouton --}}
     <div class="mt-4 mb-5">
 
         <a href="{{ route('emplois.create') }}"
-           class="btn btn-primary w-100">
+           class="btn nafar-btn w-100">
 
             Gérer l'emploi du temps
 
@@ -190,42 +255,43 @@ Vous avez atteint votre objectif quotidien d'apprentissage. Continuez sur cette 
 
     </div>
 
-    <div class="card shadow-sm mt-4">
+    {{-- Progression hebdomadaire --}}
+    <div class="card nafar-card shadow-sm mt-4">
 
-    <div class="card-body">
+        <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-            <span class="fw-semibold">
-                Progression hebdomadaire
-            </span>
+                <span class="fw-semibold nafar-title">
+                    📅 Progression hebdomadaire
+                </span>
 
-            <span class="fw-bold text-primary">
-                {{ $pourcentageHebdo }} %
-            </span>
-
-        </div>
-
-        <div class="progress" style="height:12px;">
-
-            <div class="progress-bar bg-primary"
-                 style="width: {{ $pourcentageHebdo }}%;">
+                <span class="fw-bold" style="color:#8B5E3C;">
+                    {{ $pourcentageHebdo }} %
+                </span>
 
             </div>
 
+            <div class="progress nafar-progress">
+
+                <div class="progress-bar"
+                     style="width:{{ $pourcentageHebdo }}%;">
+
+                </div>
+
+            </div>
+
+            <small class="d-block mt-3 nafar-text">
+
+                <strong>{{ $valideesHebdo }}</strong> matière(s) validée(s)
+                sur
+                <strong>{{ $totalHebdo }}</strong>
+
+            </small>
+
         </div>
 
-        <small class="text-muted d-block mt-2">
-
-            {{ $valideesHebdo }} matière(s) validée(s)
-            sur
-            {{ $totalHebdo }}
-
-        </small>
-
     </div>
-
-</div>
 
 </div>
 

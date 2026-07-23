@@ -1,0 +1,14 @@
+trouver la derniere erreur serveur 
+grep -n "ERROR" storage/logs/laravel.log | tail -1
+
+remettre à jour les routes :
+
+php artisan route:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+
+les reconstruires:
+php artisan route:cache
+php artisan config:cache
+php artisan view:cache
