@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
 
 
             Route::get('/revision2/jour', [RevisionController::class, 'revisionAnciennes'])
-            ->name('revision.anciennes');
+            ->name('revision2.anciennes');
         });
 
     // Matières
