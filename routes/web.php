@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/emplois/{emploi}/validation', [EmploiDuTempsController::class, 'toggleValidation'])
         ->name('emplois.validation');
+        
         Route::get('/revision2/jour', [RevisionController::class, 'revisionAnciennes'])
             ->name('revision.anciennes');
         });
