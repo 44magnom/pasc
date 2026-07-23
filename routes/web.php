@@ -27,6 +27,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+
+            Route::get('/revision2/jour', [RevisionController::class, 'revisionAnciennes'])
+            ->name('revision.anciennes');
+        });
+
     // Matières
     Route::resource('matieres', MatiereController::class);
 
@@ -62,16 +67,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/emplois/{emploi}/validation', [EmploiDuTempsController::class, 'toggleValidation'])
         ->name('emplois.validation');
+
+        Route::get('/revision1/jour', [RevisionController::class, 'revisionDuJour'])
+        ->name('revision.jour');
         
-        Route::get('/revision2/jour', [RevisionController::class, 'revisionAnciennes'])
-            ->name('revision.anciennes');
-        });
-Route::get('/revision1/jour', [RevisionController::class, 'revisionDuJour'])
-    ->name('revision.jour');
 
     Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
     ->name('chapitres.index');
-
 
 
 // Routes d'authentification Breeze
