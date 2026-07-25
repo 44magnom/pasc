@@ -14,7 +14,7 @@
                 Retour
             </a>
 
-            <a href="{{ route('chapitres.createForMatiere', $matiere->id) }}"
+            <a href="{{ route('chapitres.index', $matiere->id) }}"
                class="btn btn-primary">
                 Ajouter un chapitre
             </a>

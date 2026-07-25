@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
     ->name('chapitres.index');
 
-
+Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
+    ->name('chapitres.index');
 // Routes d'authentification Breeze
 require __DIR__.'/auth.php';

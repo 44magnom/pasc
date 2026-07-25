@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Matiere;
 use App\Models\Chapitre;
-
+use Exception;
 
 class ChapitreController extends Controller
 {
@@ -15,8 +16,7 @@ class ChapitreController extends Controller
 public function index(Matiere $matiere)
 {
     $chapitres = $matiere->chapitres()->orderBy('chapitre')->get();
-    dd($matiere);
-
+  
     return view('chapitre.gerer', compact('matiere', 'chapitres'));
 }
 
@@ -38,22 +38,35 @@ public function createForMatiere($matiere)
     /**
      * Store a newly created resource in storage.
      */
+/**
+ * Store a newly created resource in storage.
+ */
+
+
 public function store(Request $request)
 {
-    
-    $request->validate([
-        'matiere_id' => 'required|exists:matieres,id',
-        'chapitre' => 'required|string|max:255',
-    ]);
+    try {
 
-    Chapitre::create([
-        'matiere_id' => $request->matiere_id,
-        'chapitre' => $request->chapitre,
-    ]);
-// dd($request->matiere_id);
-    return redirect()
+        $request->validate([
+            'matiere_id' => 'required|exists:matieres,id',
+            'chapitre'   => 'required|string|max:255',
+        ]);
+
+        Chapitre::create([
+            'matiere_id' => $request->matiere_id,
+            'chapitre'   => $request->chapitre,
+         
+        ]);
+
+        return redirect()
             ->back()
-            ->with('success','Chapitre ajouté avec succès.');
+            ->with('success', 'Chapitre ajouté avec succès.');
+
+    } catch (Exception $e) {
+
+        dd($e->getMessage());
+
+    }
 }
 
     /**

@@ -11,6 +11,7 @@ class Chapitre extends Model
     protected $fillable = [
         'matiere_id',
         'chapitre',
+   
         'is_revised'
     ];
 

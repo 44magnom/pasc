@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Matiere;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class MatiereController extends Controller
@@ -44,8 +44,8 @@ public function store(Request $request)
 
   $matieres = Matiere::all()->reverse();
 
-    return view('matieres.add', compact('matieres'))
-            ->with('success', 'Matière ajoutée avec succès.');
+return redirect()->back()
+    ->with('success', 'Matière ajoutée avec succès.');
                     
 }
 
