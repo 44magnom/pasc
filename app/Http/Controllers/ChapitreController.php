@@ -29,12 +29,16 @@ public function create()
 }
 public function createForMatiere($matiere)
 {
-    $matiere = Matiere::with('chapitres.notes')
-                      ->findOrFail($matiere);
+    $matiere = Auth::user()
+        ->matieres()
+        ->with(['chapitres' => function ($query) {
+            $query->orderBy('chapitre', 'asc')
+                  ->with('notes');
+        }])
+        ->findOrFail($matiere);
 
     return view('chapitre.create', compact('matiere'));
 }
-
     /**
      * Store a newly created resource in storage.
      */
