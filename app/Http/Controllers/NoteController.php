@@ -29,11 +29,13 @@ class NoteController extends Controller
 public function create()
 {
     $matieres = Matiere::with('chapitres')->get();
+    dd('bon');
   
     return view('notes.create', compact('matieres'));
 }
 public function creates($chapitre)
 {
+    
     $chapitre = Chapitre::with('matiere')->findOrFail($chapitre);
 
     return view('notes.createinterne', compact('chapitre'));

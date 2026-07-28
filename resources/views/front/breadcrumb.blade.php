@@ -11,7 +11,7 @@
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
             <li class="breadcrumb-item active">
-                Liste des matières
+                Matières
             </li>
 
         @elseif(Route::is('chapitres.createForMatiere'))
@@ -19,14 +19,14 @@
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
                         <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}">Liste matières</a>
+                <a href="{{ route('dashboard') }}"> matières</a>
             </li>
             <li class="breadcrumb-item">
                 <a href="{{ route('chapitres.createForMatiere',$matiere->id) }}">  {{ $matiere->matiere }}</a>
             </li>
 
             <li class="breadcrumb-item active">
-                liste Chapitres
+                 Chapitres
             </li>
 
         @elseif(Route::is('chapitres.show'))
@@ -34,7 +34,7 @@
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
                         <li class="breadcrumb-item">
-                <a href="{{ route('dashboard') }}">Liste matières</a>
+                <a href="{{ route('dashboard') }}"> matières</a>
             </li>
             <li class="breadcrumb-item">
                 <a href="{{ route('chapitres.createForMatiere',$chapitre->matiere->id) }}">   {{ $chapitre->matiere->matiere }}</a>
@@ -44,16 +44,39 @@
             </li>
 
             <li class="breadcrumb-item active">
-                liste notes
+                 notes
             </li>
 
 
+        @elseif(Route::is('notes.creates'))
+                      <li class="breadcrumb-item">
+                <a href="{{ route('accueil') }}">Accueil</a>
+            </li>
+                        <li class="breadcrumb-item">
+                <a href="{{ route('matieres.index') }}"> matières</a>
+            </li>
+<li class="breadcrumb-item">
+    <a href="{{ route('chapitres.index', $chapitre->matiere->id) }}">
+        {{ $chapitre->matiere->matiere }}
+    </a>
+</li>
+
+<li class="breadcrumb-item">
+    <a href="{{ route('chapitres.show', $chapitre->id) }}">
+        {{ $chapitre->chapitre }}
+    </a>
+</li>
+
+
+            <li class="breadcrumb-item active">
+               Ajouter note
+            </li>
         @elseif(Route::is('notes.edit'))
                       <li class="breadcrumb-item">
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
                         <li class="breadcrumb-item">
-                <a href="{{ route('matieres.index') }}">Liste matières</a>
+                <a href="{{ route('matieres.index') }}"> matières</a>
             </li>
 <li class="breadcrumb-item">
     <a href="{{ route('chapitres.index', $note->chapitre->matiere_id) }}">
@@ -68,7 +91,7 @@
 </li>
 <li class="breadcrumb-item">
     <a href="{{ route('chapitres.show', $note->chapitre_id) }}">
-         liste notes
+          notes
     </a>
 </li>
 
