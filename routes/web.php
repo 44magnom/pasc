@@ -87,4 +87,8 @@ Route::get('/chapitres/{chapitre}/gerernote', [NoteController::class, 'gererNote
 
 Route::get('/export-txt', [ExportController::class, 'exportTexte'])
     ->name('export.txt');
+
+Route::get('/chapitres/{chapitre}/export-txt', [ExportController::class, 'exportChapitre'])
+    ->middleware('auth')
+    ->name('chapitres.export');
 require __DIR__.'/auth.php';
