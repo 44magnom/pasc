@@ -9,48 +9,48 @@ use PhpOffice\PhpWord\IOFactory;
 
 class ExportController extends Controller
 {
-    public function exportWord()
-    {
-        $matieres = Matiere::where('user_id', Auth::id())
-            ->with('chapitres.notes')
-            ->orderBy('matiere')
-            ->get();
+public function exportTexte()
+{
+    $matieres = Matiere::where('user_id', Auth::id())
+        ->with('chapitres.notes')
+        ->orderBy('matiere')
+        ->get();
 
-        $phpWord = new PhpWord();
+    $contenu = "NAFARBOX\n";
+    $contenu .= "Export du : " . now()->format('d/m/Y H:i') . "\n\n";
 
-        $section = $phpWord->addSection();
+    foreach ($matieres as $matiere) {
 
-        $section->addTitle('NAFARBOX', 1);
-        $section->addText('Export du : '.now()->format('d/m/Y H:i'));
+        $contenu .= "=====================================\n";
+        $contenu .= "MATIÈRE : {$matiere->matiere}\n";
+        $contenu .= "=====================================\n\n";
 
-        foreach ($matieres as $matiere) {
+        foreach ($matiere->chapitres as $chapitre) {
 
-            $section->addTitle($matiere->matiere, 2);
+            $contenu .= "Chapitre : {$chapitre->chapitre}\n";
+            $contenu .= str_repeat('-', 40) . "\n";
 
-            foreach ($matiere->chapitres as $chapitre) {
+            foreach ($chapitre->notes as $note) {
 
-                $section->addTitle($chapitre->chapitre, 3);
+                $contenu .= "Question :\n";
+                $contenu .= strip_tags($note->recto) . "\n\n";
 
-                foreach ($chapitre->notes as $note) {
+                $contenu .= "Réponse :\n";
+                $contenu .= strip_tags($note->verso) . "\n\n";
 
-                    $section->addText('Question', ['bold' => true]);
-                    $section->addText(strip_tags($note->recto));
-
-                    $section->addText('Réponse', ['bold' => true]);
-                    $section->addText(strip_tags($note->verso));
-
-                    $section->addText('--------------------------------');
-                }
+                $contenu .= str_repeat('=', 60) . "\n\n";
             }
 
-            $section->addPageBreak();
+            $contenu .= "\n";
         }
 
-        $tempFile = storage_path('app/nafarbox.docx');
-
-        $writer = IOFactory::createWriter($phpWord, 'Word2007');
-        $writer->save($tempFile);
-
-        return response()->download($tempFile)->deleteFileAfterSend(true);
+        $contenu .= "\n\n";
     }
+
+    return response($contenu)
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Content-Disposition', 'attachment; filename="nafarbox.txt"');
+}
+
+
 }

@@ -195,9 +195,9 @@
     Retour au tableau de bord
 
 </a>
-<a href="{{ route('export.word') }}" class="btn btn-success">
-    <i class="bi bi-file-earmark-word"></i>
-    Exporter toutes mes données
+<a href="{{ route('export.txt') }}" class="btn btn-secondary">
+    <i class="bi bi-file-text"></i>
+    Exporter en texte
 </a>
 </div>
     {{-- Liste --}}
