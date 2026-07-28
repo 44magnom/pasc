@@ -143,12 +143,13 @@
                                     {{ $loop->iteration }}
 
                                 </td>
-
-                                <td style="color:#654321;font-weight:600;">
-
-                                    {{ $chapitre->chapitre }}
-
-                                </td>
+<td style="font-weight:600;">
+    <a href="{{ route('chapitres.show', $chapitre->id) }}"
+       class="text-decoration-none"
+       style="color:#654321;">
+        {{ $chapitre->chapitre }}
+    </a>
+</td>
 
                                 <td class="text-center">
 
