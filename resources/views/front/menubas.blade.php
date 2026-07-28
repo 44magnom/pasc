@@ -4,7 +4,7 @@
        class="menu-item"
 >
 
-        <i class="bi bi-book"></i>
+      <i class="bi bi-trophy"></i>
 
     </a>
 
@@ -18,8 +18,8 @@
    <a href="{{ route('dashboard') }}"
        class="menu-item">
 
-        <i class="bi bi-person"></i>
-
+        <!-- <i class="bi bi-person"></i> -->
+ <i class="bi bi-book"></i>
     </a>
 
 </div>

@@ -12,6 +12,7 @@
 <body>
 
      @include('front.navbar')
+         @include('front.breadcrumb')
 
     <div class="container mt-4">
         @yield('content')
@@ -22,6 +23,7 @@
    
     @include('notes.modal')
     @include('notes.modalconseil')
+
     @stack('styles')
     @stack('scripts')
 

@@ -30,11 +30,12 @@
         <div class="mb-3">
             <label class="form-label">Verso</label>
 
-            <textarea
-                name="verso"
-                class="form-control @error('verso') is-invalid @enderror"
-                rows="6"
-                required>{{ old('verso', $note->verso) }}</textarea>
+<textarea
+    id="verso"
+    name="verso"
+    class="form-control @error('verso') is-invalid @enderror"
+    rows="6"
+    required>{{ old('verso', $note->verso) }}</textarea>
 
             @error('verso')
                 <div class="invalid-feedback">
