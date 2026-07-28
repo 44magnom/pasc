@@ -89,4 +89,45 @@ public function exportChapitre($id)
         ->header('Content-Type', 'text/plain; charset=UTF-8')
         ->header('Content-Disposition', 'attachment; filename="'.$nom.'"');
 }
+
+
+public function exportMatiere($id)
+{
+    $matiere = Matiere::where('user_id', Auth::id())
+        ->with('chapitres.notes')
+        ->findOrFail($id);
+
+    $contenu = "NAFARBOX\n";
+    $contenu .= "Export du : " . now()->format('d/m/Y H:i') . "\n\n";
+
+    $contenu .= "MATIÈRE : {$matiere->matiere}\n";
+    $contenu .= str_repeat("=", 70) . "\n\n";
+
+    foreach ($matiere->chapitres as $chapitre) {
+
+        $contenu .= "CHAPITRE : {$chapitre->chapitre}\n";
+        $contenu .= str_repeat("-", 60) . "\n\n";
+
+        foreach ($chapitre->notes as $index => $note) {
+
+            $contenu .= "Note " . ($index + 1) . "\n\n";
+
+            $contenu .= "Question :";
+            $contenu .= strip_tags($note->recto) . "\n\n";
+
+            $contenu .= "Réponse :";
+            $contenu .= strip_tags($note->verso) . "\n\n";
+
+            $contenu .= str_repeat("-", 60) . "\n\n";
+        }
+
+        $contenu .= "\n";
+    }
+
+    $nom = str_replace(' ', '_', $matiere->matiere) . '.txt';
+
+    return response($contenu)
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Content-Disposition', 'attachment; filename="'.$nom.'"');
+}
 }

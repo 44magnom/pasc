@@ -91,4 +91,7 @@ Route::get('/export-txt', [ExportController::class, 'exportTexte'])
 Route::get('/chapitres/{chapitre}/export-txt', [ExportController::class, 'exportChapitre'])
     ->middleware('auth')
     ->name('chapitres.export');
+    Route::get('/matieres/{matiere}/export-txt', [ExportController::class, 'exportMatiere'])
+    ->middleware('auth')
+    ->name('matieres.export');
 require __DIR__.'/auth.php';
