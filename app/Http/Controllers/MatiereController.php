@@ -37,18 +37,22 @@ public function store(Request $request)
         'matiere' => 'required|string|max:255',
     ]);
 
+    $user = auth()->user();
+
+    // Si l'utilisateur n'est pas abonné, limiter à 5 matières
+    if (!$user->is_subscribed && $user->matieres()->count() >= 3) {
+        return redirect()->back()
+            ->with('error', 'La version gratuite est limitée à 3 matières. Abonnez-vous pour créer un nombre illimité de matières.');
+    }
+
     Matiere::create([
         'matiere' => $request->matiere,
-           'user_id' => auth()->id(),
+        'user_id' => $user->id,
     ]);
 
-  $matieres = Matiere::all()->reverse();
-
-return redirect()->back()
-    ->with('success', 'Matière ajoutée avec succès.');
-                    
+    return redirect()->back()
+        ->with('success', 'Matière ajoutée avec succès.');
 }
-
     /**
      * Display the specified resource.
      */

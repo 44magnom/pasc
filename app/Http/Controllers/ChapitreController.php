@@ -15,8 +15,14 @@ class ChapitreController extends Controller
      */
 public function index(Matiere $matiere)
 {
-    $chapitres = $matiere->chapitres()->orderBy('chapitre')->get();
-  
+    $matiere = Auth::user()
+        ->matieres()
+        ->findOrFail($matiere->id);
+
+    $chapitres = $matiere->chapitres()
+        
+        ->get();
+
     return view('chapitre.gerer', compact('matiere', 'chapitres'));
 }
 
@@ -29,13 +35,17 @@ public function create()
 }
 public function createForMatiere($matiere)
 {
-    $matiere = Auth::user()
-        ->matieres()
-        ->with(['chapitres' => function ($query) {
-            $query->orderBy('chapitre', 'asc')
-                  ->with('notes');
-        }])
+    $user = Auth::user();
+
+    $matiere = $user->matieres()
+        ->with([
+            'chapitres' => function ($query) {
+                $query->orderBy('chapitre', 'asc')
+                      ->with('notes');
+            }
+        ])
         ->findOrFail($matiere);
+
 
     return view('chapitre.create', compact('matiere'));
 }
@@ -56,10 +66,22 @@ public function store(Request $request)
             'chapitre'   => 'required|string|max:255',
         ]);
 
-Chapitre::create([
-    'matiere_id' => $request->matiere_id,
-    'chapitre'   => $request->chapitre,
-]);
+        $user = Auth::user();
+
+        // Vérifier que la matière appartient à l'utilisateur
+        $matiere = $user->matieres()->findOrFail($request->matiere_id);
+
+        // Limite de 5 chapitres pour les utilisateurs non abonnés
+        if (!$user->is_subscribed && $matiere->chapitres()->count() >= 3) {
+            return redirect()
+                ->back()
+                ->with('error', 'La version gratuite est limitée à 3 chapitres par matière. Passez à la version Premium pour créer davantage de chapitres.');
+        }
+
+        Chapitre::create([
+            'matiere_id' => $matiere->id,
+            'chapitre'   => $request->chapitre,
+        ]);
 
         return redirect()
             ->back()

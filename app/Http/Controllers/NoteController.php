@@ -35,8 +35,23 @@ public function create()
 }
 public function creates($chapitre)
 {
-    
-    $chapitre = Chapitre::with('matiere')->findOrFail($chapitre);
+    $user = Auth::user();
+
+    $chapitre = Chapitre::whereHas('matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with('matiere')
+        ->findOrFail($chapitre);
+
+    // Limite de 5 notes pour les utilisateurs non abonnés
+    if (!$user->is_subscribed && $chapitre->notes()->count() >= 5) {
+        return redirect()
+            ->back()
+            ->with(
+                'error',
+                'La version gratuite est limitée à 5 notes par chapitre. Passez à la version Premium pour créer davantage de notes.'
+            );
+    }
 
     return view('notes.createinterne', compact('chapitre'));
 }
@@ -46,21 +61,39 @@ public function creates($chapitre)
      */
 public function store(Request $request)
 {
-Note::create([
-    'chapitre_id' => $request->chapitre_id,
-    'recto' => $request->recto,
-    'verso' => $request->verso,
-    'nombre_revision' => 0,
-    'prochaine_revision' => today(),
-]);
+    $user = Auth::user();
 
-return redirect()
-    ->back()
-    ->withInput([
-        'matiere_id' => $request->matiere_id,
-        'chapitre_id' => $request->chapitre_id,
-    ])
-    ->with('success', 'Note ajoutée avec succès.');
+    $chapitre = Chapitre::whereHas('matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->findOrFail($request->chapitre_id);
+
+    // Limite de 5 notes par chapitre pour les utilisateurs non abonnés
+    if (!$user->is_subscribed && $chapitre->notes()->count() >= 5) {
+        return redirect()
+            ->back()
+            ->withInput()
+            ->with(
+                'error',
+                'Limite atteinte: La version gratuite est limitée à 5 notes par chapitre. Passez à la version Premium pour créer davantage de notes.'
+            );
+    }
+
+    Note::create([
+        'chapitre_id'         => $chapitre->id,
+        'recto'               => $request->recto,
+        'verso'               => $request->verso,
+        'nombre_revision'     => 0,
+        'prochaine_revision'  => today(),
+    ]);
+
+    return redirect()
+        ->back()
+        ->withInput([
+            'matiere_id'  => $request->matiere_id,
+            'chapitre_id' => $request->chapitre_id,
+        ])
+        ->with('success', 'Note ajoutée avec succès.');
 }
 
     /**
@@ -76,8 +109,23 @@ return redirect()
      */
 public function edit($id)
 {
-    $note = Note::findOrFail($id);
-session(['return_url' => url()->previous()]);
+    $user = Auth::user();
+
+    $note = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->findOrFail($id);
+
+    // Interdire la modification aux utilisateurs non abonnés
+    if (!$user->is_subscribed) {
+        return redirect()->back()->with(
+            'error',
+            'La modification des notes est réservée aux utilisateurs Premium.'
+        );
+    }
+
+    session(['return_url' => url()->previous()]);
+
     return view('notes.edit', compact('note'));
 }
 
@@ -109,7 +157,19 @@ public function update(Request $request, $id)
      */
 public function destroy($id)
 {
-    $note = Note::findOrFail($id);
+    $user = Auth::user();
+
+    $note = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->findOrFail($id);
+
+    // Interdire la suppression aux utilisateurs non abonnés
+    if (!$user->is_subscribed) {
+        return redirect()
+            ->back()
+            ->with('error', 'La suppression des notes est réservée aux utilisateurs Premium.');
+    }
 
     $chapitreId = $note->chapitre_id;
 

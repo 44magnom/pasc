@@ -53,10 +53,10 @@
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
                         <li class="breadcrumb-item">
-                <a href="{{ route('matieres.index') }}"> matières</a>
+                <a href="{{ route('dashboard') }}"> matières</a>
             </li>
 <li class="breadcrumb-item">
-    <a href="{{ route('chapitres.index', $chapitre->matiere->id) }}">
+    <a href="{{ route('chapitres.createForMatiere',$chapitre->matiere->id) }}">
         {{ $chapitre->matiere->matiere }}
     </a>
 </li>
@@ -76,10 +76,10 @@
                 <a href="{{ route('accueil') }}">Accueil</a>
             </li>
                         <li class="breadcrumb-item">
-                <a href="{{ route('matieres.index') }}"> matières</a>
+                <a href="{{ route('dashboard') }}"> matières</a>
             </li>
 <li class="breadcrumb-item">
-    <a href="{{ route('chapitres.index', $chapitre->id) }}">
+    <a href="{{ route('chapitres.createForMatiere',$chapitre->matiere->id) }}">
         {{ $chapitre->matiere->matiere }}
     </a>
 </li>

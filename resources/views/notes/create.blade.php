@@ -3,7 +3,13 @@
 @section('content')
 
 <div class="container mt-4">
-
+@if(session('error'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
     <h4>Ajouter une note</h4>
 
     @if(session('success'))

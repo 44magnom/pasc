@@ -85,7 +85,14 @@
 
     {{-- Titre --}}
     <div class="text-center mb-4">
-
+@if(session('error'))
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Limite atteinte !</strong>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
         <h2 class="fw-bold nafar-title">
             📚 Gestion des matières
         </h2>
@@ -187,6 +194,10 @@
     <i class="bi bi-arrow-left-circle me-2"></i>
     Retour au tableau de bord
 
+</a>
+<a href="{{ route('export.word') }}" class="btn btn-success">
+    <i class="bi bi-file-earmark-word"></i>
+    Exporter toutes mes données
 </a>
 </div>
     {{-- Liste --}}

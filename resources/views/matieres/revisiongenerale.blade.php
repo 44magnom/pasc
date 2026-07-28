@@ -84,12 +84,12 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
             <strong id="nomMatiere">
-                {{ $notes->first()?->chapitre?->matiere?->matiere ?? 'Aucune matière' }}
-            </strong>
-            <br>
-
-            <small class="text-muted" id="nomChapitre">
                 {{ $notes->first()?->chapitre?->chapitre ?? 'Aucun chapitre' }}
+                </strong>
+                <br>
+                
+                <small class="text-muted" id="nomChapitre">
+                {{ $notes->first()?->chapitre?->matiere?->matiere ?? 'Aucune matière' }}
             </small>
         </div>
 
@@ -110,7 +110,7 @@
     <hr>
 
     <div id="reponseCarte"
-         style="display:none; white-space: pre-wrap; font-size:20px;">
+         style="display:none; white-space: pre-wrap; ">
         {!! $notes->first()?->verso ?? '' !!}
     </div>
 

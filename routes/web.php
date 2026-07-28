@@ -10,7 +10,20 @@ use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RevisionController;
+use App\Http\Controllers\ExportController;
 
+
+Route::get('/ini', function () {
+    return php_ini_loaded_file();
+});
+Route::get('/zip-test', function () {
+    return [
+        'PHP' => PHP_VERSION,
+        'SAPI' => php_sapi_name(),
+        'Zip chargé' => extension_loaded('zip'),
+        'Classe ZipArchive' => class_exists(\ZipArchive::class),
+    ];
+});
 // Accueil
 Route::get('/', [AccueilController::class, 'index'])->name('accueil');
 Route::view('/bienvenu', 'front.bienvenu')->name('bienvenu');
@@ -81,4 +94,8 @@ Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index']
     ->name('notes.toggle');
 Route::get('/chapitres/{chapitre}/gerernote', [NoteController::class, 'gererNote'])
     ->name('chapitres.gerernote');
+
+Route::get('/export-word', [ExportController::class, 'exportWord'])
+    ->middleware('auth')
+    ->name('export.word');
 require __DIR__.'/auth.php';
