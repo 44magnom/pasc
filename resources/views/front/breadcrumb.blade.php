@@ -71,6 +71,29 @@
             <li class="breadcrumb-item active">
                Ajouter note
             </li>
+        @elseif(Route::is('chapitres.gerernote'))
+                      <li class="breadcrumb-item">
+                <a href="{{ route('accueil') }}">Accueil</a>
+            </li>
+                        <li class="breadcrumb-item">
+                <a href="{{ route('matieres.index') }}"> matières</a>
+            </li>
+<li class="breadcrumb-item">
+    <a href="{{ route('chapitres.index', $chapitre->id) }}">
+        {{ $chapitre->matiere->matiere }}
+    </a>
+</li>
+
+<li class="breadcrumb-item">
+    <a href="{{ route('chapitres.show', $chapitre->id) }}">
+        {{ $chapitre->chapitre }}
+    </a>
+</li>
+
+
+            <li class="breadcrumb-item active">
+               Gérer les notes
+            </li>
         @elseif(Route::is('notes.edit'))
                       <li class="breadcrumb-item">
                 <a href="{{ route('accueil') }}">Accueil</a>

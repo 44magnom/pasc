@@ -13,10 +13,14 @@ class RevisionController extends Controller
 
 public function revisionDuJour()
 {
-    $notes = Note::with('chapitre.matiere')
-        ->whereDate('prochaine_revision', today())
-        ->inRandomOrder()
-        ->get();
+$notes = Note::with('chapitre.matiere')
+    ->where('is_revised', true)
+    ->whereDate('prochaine_revision', today())
+    ->whereHas('chapitre.matiere', function ($query) {
+        $query->where('user_id', auth()->id());
+    })
+    ->inRandomOrder()
+    ->get();
 
     $typeRevision = 'jour';
 

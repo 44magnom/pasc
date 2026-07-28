@@ -77,4 +77,8 @@ Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index']
     ->name('chapitres.index');
     Route::resource('chapitres', ChapitreController::class)
     ->except(['index']);
+    Route::patch('/notes/{note}/toggle', [NoteController::class, 'toggle'])
+    ->name('notes.toggle');
+Route::get('/chapitres/{chapitre}/gerernote', [NoteController::class, 'gererNote'])
+    ->name('chapitres.gerernote');
 require __DIR__.'/auth.php';

@@ -18,13 +18,13 @@
                 {{ $chapitre->chapitre }}
             </p>
 
-            <a href="{{ route('chapitres.edit', $chapitre->id) }}"
-               style="color:#654321;"
-               title="Modifier le chapitre">
+<a href="{{ route('chapitres.gerernote', $chapitre->id) }}"
+   style="color:#654321;"
+   title="Gérer les notes">
 
-                <i class="bi bi-pencil-square"></i>
+    <i class="bi bi-pencil-square"></i>
 
-            </a>
+</a>
 
         </div>
 
@@ -92,9 +92,9 @@
 </a>
             </td>
 
-            <td class="text-center">
+            <!-- <td class="text-center"> -->
 
-                <div class="d-flex justify-content-center gap-2">
+                <!-- <div class="d-flex justify-content-center gap-2">
 
 <a href="{{ route('notes.edit', $note->id) }}"
    class="btn btn-sm"
@@ -104,7 +104,22 @@
 
 
                     
-                </div>
+                </div> -->
+                <td class="text-center">
+    <form action="{{ route('notes.toggle', $note->id) }}"
+          method="POST"
+          onclick="event.stopPropagation();">
+
+        @csrf
+        @method('PATCH')
+
+        <input
+            type="checkbox"
+            class="form-check-input fs-5"
+            onchange="this.form.submit()"
+            {{ $note->is_revised ? 'checked' : '' }}>
+
+    </form>
 
             </td>
 
@@ -125,3 +140,4 @@
 </table>
 
 @endsection
+

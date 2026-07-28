@@ -119,4 +119,16 @@ public function destroy($id)
         ->route('chapitres.show', $chapitreId)
         ->with('success', 'Note supprimée avec succès.');
 }
+
+public function toggle(Note $note)
+{
+    $note->is_revised = ! $note->is_revised;
+    $note->save();
+
+    return back()->with('success', 'Statut mis à jour.');
+}
+public function gererNote(Chapitre $chapitre)
+{
+    return view('notes.gerer', compact('chapitre'));
+}
 }

@@ -17,19 +17,26 @@ public function index()
 
     $user = Auth::user();
 
-    $matieres = $user->matieres()->with(['chapitres', 'notes'])->get();
+    $matieres = $user->matieres()
+        ->with(['chapitres', 'notes'])
+        ->get();
 
-    $notes = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
-        $query->where('user_id', $user->id);
-    })->get();
+    $notes = Note::with('chapitre.matiere')
+        ->where('is_revised', true)
+        ->whereHas('chapitre.matiere', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->get();
 
-    $notesAReviser = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+    $notesAReviser = Note::where('is_revised', true)
+        ->whereHas('chapitre.matiere', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
         ->whereDate('prochaine_revision', today())
         ->count();
 
-    $notesEnRetard = Note::whereHas('chapitre.matiere', function ($query) use ($user) {
+    $notesEnRetard = Note::where('is_revised', true)
+        ->whereHas('chapitre.matiere', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
         ->whereDate('prochaine_revision', '<', today())
