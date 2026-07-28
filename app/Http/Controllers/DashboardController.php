@@ -10,8 +10,11 @@ class DashboardController extends Controller
 
 public function index()
 {
-    $matieres = Auth::user()->matieres()->latest()->get();
+$matieres = Auth::user()
+    ->matieres()
+    ->orderBy('matiere', 'asc')
+    ->get();
 
-    return view('back.dashboard', compact('matieres'));
+return view('back.dashboard', compact('matieres'));
 }
 }
