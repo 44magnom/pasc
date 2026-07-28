@@ -24,7 +24,7 @@
         @if($notesEnRetard > 0)
         <div class="col-md-4 mb-3">
 
-            <a href="{{ route('revision.anciennes') }}"
+            <a href="{{ route('revision2.anciennes') }}"
                class="btn btn-outline-danger btn-lg w-100 py-3 rounded-pill">
 
                 Réviser les notes en retard

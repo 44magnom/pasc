@@ -52,11 +52,10 @@ public function store(Request $request)
             'chapitre'   => 'required|string|max:255',
         ]);
 
-        Chapitre::create([
-            'matiere_id' => $request->matiere_id,
-            'chapitre'   => $request->chapitre,
-         
-        ]);
+Chapitre::create([
+    'matiere_id' => $request->matiere_id,
+    'chapitre'   => $request->chapitre,
+]);
 
         return redirect()
             ->back()
@@ -110,9 +109,9 @@ public function update(Request $request, $id)
         'chapitre' => $request->chapitre,
     ]);
 
-    return redirect()
-        ->route('chapitres.show', $chapitre->id)
-        ->with('success', 'Chapitre modifié avec succès.');
+  return redirect()
+    ->route('chapitres.createForMatiere', $chapitre->matiere_id)
+    ->with('success', 'Chapitre modifié avec succès.');
 }
 
     /**
@@ -126,8 +125,10 @@ public function destroy($id)
 
     $chapitre->delete();
 
-    return redirect()
-        ->route('chapitres.createForMatiere', $matiereId)
-        ->with('success', 'Chapitre supprimé avec succès.');
+
+
+return redirect()
+    ->back()
+    ->with('success', 'Chapitre supprimé avec succès.');
 }
 }

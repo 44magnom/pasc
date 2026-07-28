@@ -42,6 +42,13 @@
                 </li>
                 <li class="nav-item">
 
+<a href="{{ session('return_url', route('dashboard')) }}">
+    <i class="bi bi-arrow-left"></i> Retour
+</a>
+
+                </li>
+                <li class="nav-item">
+
                     <a class="nav-link"
                        href="{{ route('notes.create') }}">
                         Ajouter une note

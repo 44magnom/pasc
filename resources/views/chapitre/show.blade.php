@@ -37,7 +37,7 @@
     <a href="{{ route('chapitres.createForMatiere', $chapitre->matiere_id) }}"
        class="btn"
        style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
-        ⬅ Retour
+        ⬅ Retour huhuh
     </a>
 
     <a href="{{ route('revision.chapitre', $chapitre->id) }}"

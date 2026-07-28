@@ -73,3 +73,25 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+
+let versoEditor;
+
+ClassicEditor
+    .create(document.querySelector('#verso'))
+    .then(editor => {
+
+        versoEditor = editor;
+
+    })
+    .catch(error => console.error(error));
+
+document.querySelector('form').addEventListener('submit', function () {
+
+    versoEditor.updateSourceElement();
+
+});
+</script>
+@endpush

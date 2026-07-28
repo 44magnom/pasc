@@ -10,6 +10,7 @@
         <h2 class="fw-bold" style="color:#654321;">
             📖 Gestion des chapitres
         </h2>
+       
 
         <p style="color:#7A6754;">
             {{ $matiere->matiere }}

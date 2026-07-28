@@ -17,6 +17,7 @@
    style="color:#654321;"
    title="Gérer les chapitres">
     <i class="bi bi-gear-fill fs-4"></i>
+   
 </a>
 
 </div>

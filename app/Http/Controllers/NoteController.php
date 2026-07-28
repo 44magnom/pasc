@@ -75,7 +75,7 @@ return redirect()
 public function edit($id)
 {
     $note = Note::findOrFail($id);
-
+session(['return_url' => url()->previous()]);
     return view('notes.edit', compact('note'));
 }
 

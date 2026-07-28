@@ -56,8 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/revision/valider', [RevisionController::class, 'valider'])
         ->name('revision.valider');
 
-    // Chapitres
-    Route::resource('chapitres', ChapitreController::class);
+
 
     Route::get('/matieres/{matiere}/chapitres/nouveau', [ChapitreController::class, 'createForMatiere'])
         ->name('chapitres.createForMatiere');
@@ -72,10 +71,10 @@ Route::middleware('auth')->group(function () {
         ->name('revision.jour');
         
 
-    Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
-    ->name('chapitres.index');
 
+// Routes d'authentification Breeze
 Route::get('/matieres/{matiere}/chapitres', [ChapitreController::class, 'index'])
     ->name('chapitres.index');
-// Routes d'authentification Breeze
+    Route::resource('chapitres', ChapitreController::class)
+    ->except(['index']);
 require __DIR__.'/auth.php';

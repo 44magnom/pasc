@@ -26,7 +26,7 @@
                 <!-- Corps -->
    <!-- Corps -->
 <div class="card-body p-0" style="background:#FFFDF9;">
-<div>
+
 
 
 <img src="{{ asset('images/box1.jpg') }}"

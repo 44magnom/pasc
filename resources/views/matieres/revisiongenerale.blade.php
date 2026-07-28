@@ -42,7 +42,7 @@
 </div>
 
 
-@if(Route::is('revision.jour') || Route::is('revision.anciennes'))
+@if(Route::is('revision.jour') || Route::is('revision2.anciennes'))
 
 <form id="formValidation"
       action="{{ route('revision.valider') }}"
@@ -110,7 +110,7 @@
     <hr>
 
     <div id="reponseCarte"
-         style="display:none; white-space: pre-wrap;">
+         style="display:none; white-space: pre-wrap; font-size:20px;">
         {!! $notes->first()?->verso ?? '' !!}
     </div>
 

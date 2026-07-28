@@ -78,7 +78,7 @@ public function edit($id)
         {
             $request->validate([
                 'matiere' => 'required|max:255',
-                   'user_id' => auth()->id(),
+                  
             ]);
 
             $matiere = Matiere::findOrFail($id);
