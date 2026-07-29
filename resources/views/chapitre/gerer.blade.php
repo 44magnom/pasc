@@ -14,12 +14,13 @@
     <div class="text-center mb-4">
 
         <h2 class="fw-bold" style="color:#654321;">
-            📖 Gestion des chapitres
+            {{ $matiere->matiere }}
         </h2>
        
 
         <p style="color:#7A6754;">
-            {{ $matiere->matiere }}
+         
+               📖 Gestion des chapitres
         </p>
 
     </div>
@@ -232,7 +233,7 @@
     {{-- Retour --}}
     <div class="mt-4">
 
-        <a href="{{ route('matieres.create') }}"
+        <a href="{{ route('matieres.export', $matiere->id) }}"
            class="btn w-100"
            style="
                 background:#FFFDF9;
@@ -245,9 +246,9 @@
            onmouseover="this.style.background='#8B5E3C';this.style.color='#fff';"
            onmouseout="this.style.background='#FFFDF9';this.style.color='#654321';">
 
-            <i class="bi bi-arrow-left-circle me-2"></i>
+        <i class="bi bi-download me-1"></i>
 
-            Retour aux matières
+        Exporter
 
         </a>
 

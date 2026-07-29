@@ -103,7 +103,11 @@
     <i class="bi bi-stack me-2"></i>
     Réviser tous les chapitres
 </a>
-
+<a href="{{ route('matieres.export', $matiere->id) }}"
+   class="btn btn-success">
+    <i class="bi bi-download"></i>
+    Exporter
+</a>
 </div>
 
 <h6 class="fw-semibold  mt-3" style="color:#654321;">Chapitres:</h6>

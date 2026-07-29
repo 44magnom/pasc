@@ -10,11 +10,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 @endif
-<a href="{{ route('chapitres.export', $chapitre->id) }}"
-   class="btn btn-success">
-    <i class="bi bi-download"></i>
-    Exporter ce chapitre
-</a>
+
 <div class="card shadow mb-4"
      style="background-color:#F8F3EB; border:1px solid #D2B48C;">
 
@@ -150,6 +146,10 @@
     </tbody>
 
 </table>
-
+<a href="{{ route('chapitres.export', $chapitre->id) }}"
+   class="btn btn-success">
+    <i class="bi bi-download"></i>
+    Exporter ce chapitre
+</a>
 @endsection
 

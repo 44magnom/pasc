@@ -308,7 +308,22 @@ Enregistrer
 
 </div>
 
+<div class="mb-4">
 
+    <div class="input-group">
+
+        <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search"></i>
+        </span>
+
+        <input type="text"
+               id="searchMatiere"
+               class="form-control border-start-0"
+               placeholder="Rechercher une matière...">
+
+    </div>
+
+</div>
 <h4 class="section-title">
 
 <i class="bi bi-collection-fill me-2"></i>
@@ -321,7 +336,7 @@ Mes matières
 
 @forelse($matieres as $matiere)
 
-<div class="col-lg-6">
+<div class="col-lg-6 matiere-item">
 
 <a
 
@@ -467,6 +482,44 @@ document.addEventListener('DOMContentLoaded',function(){
         });
 
     }
+
+});
+
+</script>
+
+@endpush
+
+@push('scripts')
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const input = document.getElementById('searchMatiere');
+
+    input.addEventListener('keyup', function () {
+
+        let recherche = this.value.toLowerCase().trim();
+
+        document.querySelectorAll('.matiere-item').forEach(function(item){
+
+            let nom = item.querySelector('.subject-title')
+                          .textContent
+                          .toLowerCase();
+
+            if(nom.includes(recherche)){
+
+                item.style.display='block';
+
+            }else{
+
+                item.style.display='none';
+
+            }
+
+        });
+
+    });
 
 });
 
