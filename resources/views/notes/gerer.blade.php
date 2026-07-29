@@ -22,7 +22,14 @@
         <p class="mb-0 fs-5" style="color:#654321;">
             {{ $chapitre->chapitre }}
         </p>
+    <a href="{{ route('chapitres.edit', $chapitre->id) }}"
+       class="text-decoration-none"
+       title="Modifier le chapitre">
 
+        <i class="bi bi-pencil-square"
+           style="font-size:1.2rem; color:#8B5E3C;"></i>
+
+    </a>
     </div>
 
 </div>

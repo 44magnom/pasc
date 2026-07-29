@@ -248,7 +248,7 @@
 
         <i class="bi bi-download me-1"></i>
 
-        Exporter
+        Exporter la matière
 
         </a>
 

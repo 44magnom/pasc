@@ -195,10 +195,7 @@
     Retour au tableau de bord
 
 </a>
-<a href="{{ route('export.txt') }}" class="btn btn-secondary">
-    <i class="bi bi-file-text"></i>
-    Exporter en texte
-</a>
+
 </div>
     {{-- Liste --}}
     <div class="card nafar-card shadow-sm">
@@ -307,7 +304,28 @@
         </div>
 
     </div>
-
 </div>
 
+    <div class="mt-4">
+
+        <a href="{{ route('export.txt') }}"
+           class="btn w-100"
+           style="
+                background:#FFFDF9;
+                color:#654321;
+                border:2px solid #8B5E3C;
+                border-radius:12px;
+                font-weight:600;
+                padding:12px;
+           "
+           onmouseover="this.style.background='#8B5E3C';this.style.color='#fff';"
+           onmouseout="this.style.background='#FFFDF9';this.style.color='#654321';">
+
+        <i class="bi bi-download me-1"></i>
+
+          Exporter toutes les matières
+
+        </a>
+
+    </div>
 @endsection

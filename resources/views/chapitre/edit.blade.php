@@ -4,7 +4,7 @@
 
 <div class="container mt-4">
 
-    <h4>Modifier le chapitre</h4>
+    <h4>Modifier le nom du chapitre</h4>
 
     <form action="{{ route('chapitres.update', $chapitre->id) }}" method="POST">
 

@@ -30,7 +30,7 @@
    style="color:#654321;"
    title="Gérer les notes">
 
-    <i class="bi bi-pencil-square"></i>
+    <i class="bi bi-gear-fill fs-4"></i>
 
 </a>
 
@@ -147,9 +147,29 @@
 
 </table>
 <a href="{{ route('chapitres.export', $chapitre->id) }}"
-   class="btn btn-success">
-    <i class="bi bi-download"></i>
+   class="btn btn-export">
+    <i class="bi bi-download me-2"></i>
     Exporter ce chapitre
 </a>
 @endsection
 
+@push('styles')
+<style>
+    .btn-export{
+    background:#F8F4EC;
+    color:#654321;
+    border:1px solid #D2B48C;
+    border-radius:12px;
+    padding:10px 18px;
+    font-weight:600;
+    transition:all .25s ease;
+}
+
+.btn-export:hover{
+    background:#FFFDF9;
+    color:#654321;
+    border-color:#8B5E3C;
+    box-shadow:0 4px 12px rgba(101,67,33,.12);
+}
+</style>
+@endPush
