@@ -19,7 +19,7 @@ $pourcentage = $total > 0
 <style>
     .nafar-card{
         background:#FFFDF9;
-        border:2px solid #C8A97E;
+  border: 0.8px solid #C8A97E;
         border-radius:18px;
     }
 
@@ -42,11 +42,15 @@ $pourcentage = $total > 0
         border-radius:50px;
     }
 
-    .nafar-btn{
-        background:#8B5E3C;
-        color:#fff;
-        border:none;
-    }
+.nafar-btn{
+    background:#F8F3EB;
+    color:#654321;
+    border:0.8px solid #C8A97E;
+    border-radius:12px;
+    font-weight:600;
+    padding:12px 20px;
+    transition:all .3s ease;
+}
 
     .nafar-btn:hover{
         background:#6F472C;
@@ -60,7 +64,7 @@ $pourcentage = $total > 0
 
     .matiere-card{
         background:#FFFDF9;
-        border:2px solid #E6D3B3;
+       border: 0.8px solid #C8A97E;
         border-radius:18px;
         transition:.25s;
     }
@@ -94,62 +98,12 @@ $pourcentage = $total > 0
         </p>
 
         <p class="mb-0 nafar-text">
-            Faire au moins une note sur chacune des matières suivantes.
+            Faire au moins une fiche sur chacune des matières suivantes.
         </p>
 
     </div>
 
-    {{-- Progression quotidienne --}}
-    <div class="card nafar-card shadow-sm mb-4">
 
-        <div class="card-body">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-
-                <span class="fw-semibold nafar-title">
-                    Progression
-                </span>
-
-                <span class="fw-bold" style="color:#8B5E3C;">
-                    {{ $pourcentage }} %
-                </span>
-
-            </div>
-
-            <div class="progress nafar-progress">
-
-                <div class="progress-bar"
-                     style="width:{{ $pourcentage }}%;">
-
-                </div>
-
-            </div>
-
-            <small class="d-block mt-3 nafar-text">
-
-                <strong>{{ $validees }}</strong> matière(s) validée(s)
-                sur
-                <strong>{{ $total }}</strong>
-
-            </small>
-
-            @if($pourcentage == 100 && $total > 0)
-
-                <div class="alert border-0 rounded-4 mt-4 mb-0"
-                     style="background:#F8F2E8;color:#654321;border-left:5px solid #8B5E3C;">
-
-                    <strong>🎉 Félicitations !</strong><br>
-
-                    Vous avez atteint votre objectif quotidien d'apprentissage.
-                    Continuez sur cette belle lancée !
-
-                </div>
-
-            @endif
-
-        </div>
-
-    </div>
 
     {{-- Message --}}
     @if(session('success'))
@@ -170,11 +124,11 @@ $pourcentage = $total > 0
              style="background:#FFF8EE;color:#654321;border-left:5px solid #C8A97E;">
 
             <h5 class="mb-2">
-                🎉 Aucun travail prévu aujourd'hui
+                🎉 Aucune matière prévue aujourd'hui
             </h5>
 
             <p class="mb-0">
-                Profitez-en pour avancer sur une autre matière.
+                Profitez-en pour avancer sur d'autres matières.
             </p>
 
         </div>
@@ -254,7 +208,57 @@ $pourcentage = $total > 0
         </a>
 
     </div>
+    {{-- Progression quotidienne --}}
+    <div class="card nafar-card shadow-sm mb-4">
 
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <span class="fw-semibold nafar-title">
+                    Progression journalière
+                </span>
+
+                <span class="fw-bold" style="color:#8B5E3C;">
+                    {{ $pourcentage }} %
+                </span>
+
+            </div>
+
+            <div class="progress nafar-progress">
+
+                <div class="progress-bar"
+                     style="width:{{ $pourcentage }}%;">
+
+                </div>
+
+            </div>
+
+            <small class="d-block mt-3 nafar-text">
+
+                <strong>{{ $validees }}</strong> matière(s) validée(s)
+                sur
+                <strong>{{ $total }}</strong>
+
+            </small>
+
+            @if($pourcentage == 100 && $total > 0)
+
+                <div class="alert border-0 rounded-4 mt-4 mb-0"
+                     style="background:#F8F2E8;color:#654321;border-left:5px solid #8B5E3C;">
+
+                    <strong>🎉 Félicitations !</strong><br>
+
+                    Vous avez atteint votre objectif quotidien d'apprentissage.
+                    Continuez sur cette belle lancée !
+
+                </div>
+
+            @endif
+
+        </div>
+
+    </div>
     {{-- Progression hebdomadaire --}}
     <div class="card nafar-card shadow-sm mt-4">
 
