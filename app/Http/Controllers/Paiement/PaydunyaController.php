@@ -32,10 +32,10 @@ class PaydunyaController extends Controller
             \Paydunya\Checkout\Store::setPostalAddress("Dakar Plateau - Etablissement kheweul");
             \Paydunya\Checkout\Store::setWebsiteUrl("https://nafarbox.com");
             \Paydunya\Checkout\Store::setLogoUrl("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png");
-            \Paydunya\Checkout\Store::setCallbackUrl(url('/api/paydunya/callback/'.$forfait->id));
+            \Paydunya\Checkout\Store::setCallbackUrl(url('https://nafarbox.com/api/paydunya/callback/'.$forfait->id));
             
             
-            \Paydunya\Checkout\Store::setCallbackUrl("https://nafarbox.com/api/get-forfaits/".$forfait->id_forfait);
+            // \Paydunya\Checkout\Store::setCallbackUrl("https://nafarbox.com/api/get-forfaits/".$forfait->id_forfait);
 
             \Paydunya\Checkout\Store::setCancelUrl(route('paydunya.cancel'));
             \Paydunya\Checkout\Store::setReturnUrl(route('paydunya.succes'));
