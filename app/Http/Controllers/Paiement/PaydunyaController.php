@@ -70,42 +70,81 @@ $invoice->addCustomData("forfait_id", $forfait->id);
 
 public function callback(Request $request)
 {
+    // Journaliser les données reçues
+    Log::info('CALLBACK REÇU', $request->all());
 
-    \Log::info('CALLBACK REÇU', $request->all());
+    $data = $request->input('data');
 
-    dd($request->all());
+    if (!$data) {
+        Log::error('Aucune donnée reçue.');
+        return response()->json([
+            'success' => false,
+            'message' => 'Aucune donnée reçue.'
+        ], 400);
+    }
 
     // Vérification de la signature
-    if ($_POST['data']['hash'] !== hash('sha512', env('P_MasterKey'))) {
-        return response()->json(['message' => 'Signature invalide'], 403);
+    $hash = hash('sha512', env('P_MasterKey'));
+
+    if (($data['hash'] ?? '') !== $hash) {
+        Log::warning('Signature invalide.');
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Signature invalide.'
+        ], 403);
     }
 
-    // Paiement réussi ?
-    if ($_POST['data']['status'] != 'completed') {
-        return response()->json(['message' => 'Paiement non validé'], 400);
+    // Vérification du statut du paiement
+    if (($data['status'] ?? '') !== 'completed') {
+        Log::warning('Paiement non validé.', $data);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Paiement non validé.'
+        ], 400);
     }
 
-    $userId = $_POST['data']['custom_data']['user_id'];
-    $forfaitId = $_POST['data']['custom_data']['forfait_id'];
+    $userId = $data['custom_data']['user_id'];
+    $forfaitId = $data['custom_data']['forfait_id'];
 
     $user = User::findOrFail($userId);
     $forfait = Forfait::findOrFail($forfaitId);
 
-    Abonnement::create([
-        'user_id' => $user->id,
-        'forfait_id' => $forfait->id,
-        'date_debut' => now(),
-        'date_fin' => now()->addDays($forfait->duree),
-        'statut' => 'actif',
-        'reference_paiement' => $_POST['data']['token'] ?? null,
-    ]);
+    // Éviter les doublons si PayDunya renvoie plusieurs callbacks
+    $reference = $data['invoice']['token'];
 
-    $user->update([
-        'is_subscribed' => true,
-    ]);
+    $abonnement = Abonnement::where('reference_paiement', $reference)->first();
+
+    if (!$abonnement) {
+
+        Abonnement::create([
+            'user_id'             => $user->id,
+            'forfait_id'          => $forfait->id,
+            'date_debut'          => now(),
+            'date_fin'            => now()->addDays($forfait->duree),
+            'statut'              => 'actif',
+            'reference_paiement'  => $reference,
+        ]);
+
+        $user->update([
+            'is_subscribed' => true,
+        ]);
+
+        Log::info('Abonnement créé avec succès.', [
+            'user_id' => $user->id,
+            'forfait_id' => $forfait->id,
+        ]);
+    } else {
+
+        Log::info('Callback déjà traité.', [
+            'reference' => $reference,
+        ]);
+    }
 
     return response()->json([
         'success' => true,
+        'message' => 'Callback traité avec succès.'
     ]);
 }
 
