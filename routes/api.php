@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Abonnement\AbonnementController;
-use App\Http\Controllers\Abonnement\PaydunyaController;
+use App\Http\Controllers\Paiement\PaydunyaController;
 // use App\Http\Controllers\AbonnementController;
 
 
