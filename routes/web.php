@@ -11,6 +11,10 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ForfaitController;
+use App\Http\Controllers\Abonnement\AbonnementController;
+use App\Http\Controllers\Paiement\PaydunyaController;
+use App\Http\Controllers\Paiement\ReponseController;
 
 
 
@@ -94,4 +98,17 @@ Route::get('/chapitres/{chapitre}/export-txt', [ExportController::class, 'export
     Route::get('/matieres/{matiere}/export-txt', [ExportController::class, 'exportMatiere'])
     ->middleware('auth')
     ->name('matieres.export');
+    Route::get('/forfaits/{forfait}', [ForfaitController::class, 'show'])
+    ->name('forfaits.show');
+    Route::get('/forfaits', [ForfaitController::class, 'index'])
+    ->name('forfaits.index');
+
+Route::post('/abonnements/{forfait_id}', [AbonnementController::class, 'store'])
+    ->name('abonnements.store');
+
+    //Paiement
+Route::get('/paydunya/payment', [PaydunyaController::class, 'store'])->name('paydunya.payment');
+Route::get('/cancel', [ReponseController::class, 'cancel'])->name('paydunya.cancel');
+Route::get('/success', [ReponseController::class, 'success'])->name('paydunya.succes');
+
 require __DIR__.'/auth.php';

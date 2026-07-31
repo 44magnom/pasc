@@ -87,13 +87,23 @@ public function store(Request $request)
         'prochaine_revision'  => today(),
     ]);
 
+// La note est créée ici...
+
+$chapitre->refresh(); // Recharge les données du chapitre
+
+if (!$user->is_subscribed && $chapitre->notes()->count() >= 5) {
     return redirect()
-        ->back()
-        ->withInput([
-            'matiere_id'  => $request->matiere_id,
-            'chapitre_id' => $request->chapitre_id,
-        ])
-        ->with('success', 'Note ajoutée avec succès.');
+        ->route('chapitres.show', $chapitre->id)
+        ->with('error', 'Vous avez atteint la limite de 5 notes pour ce chapitre.');
+}
+
+return redirect()
+    ->back()
+    ->withInput([
+        'matiere_id'  => $request->matiere_id,
+        'chapitre_id' => $request->chapitre_id,
+    ])
+    ->with('success', 'Note ajoutée avec succès.');
 }
 
     /**

@@ -31,6 +31,12 @@
                     </a>
 
                 </li> -->
+                <li class="nav-item">
+    <a class="nav-link"
+       href="{{ route('forfaits.index') }}">
+        Nos forfaits
+    </a>
+</li>
 
                 <li class="nav-item">
 

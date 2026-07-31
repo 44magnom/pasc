@@ -108,5 +108,26 @@
     </tbody>
 
 </table>
+    <div class="mt-4">
 
+        <a href="{{ route('chapitres.export', $chapitre->id) }}"
+           class="btn w-100"
+           style="
+                background:#FFFDF9;
+                color:#654321;
+                border:2px solid #8B5E3C;
+                border-radius:12px;
+                font-weight:600;
+                padding:12px;
+           "
+           onmouseover="this.style.background='#8B5E3C';this.style.color='#fff';"
+           onmouseout="this.style.background='#FFFDF9';this.style.color='#654321';">
+
+        <i class="bi bi-download me-1"></i>
+
+        Exporter le chapitre
+
+        </a>
+
+    </div>
 @endsection
