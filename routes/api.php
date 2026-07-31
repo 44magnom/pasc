@@ -6,6 +6,7 @@ use App\Http\Controllers\Abonnement\AbonnementController;
 use App\Http\Controllers\Abonnement\PaydunyaController;
 // use App\Http\Controllers\AbonnementController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,8 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+
 Route::post('/paydunya/callback/{forfait}', [PaydunyaController::class, 'callback'])
     ->name('paydunya.callback');
-
-Route::post('/get-forfaits/{nomForfaitId}', [AbonnementController::class, 'store'])->name('get.forfaits');
-

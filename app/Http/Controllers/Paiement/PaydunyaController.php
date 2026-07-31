@@ -33,9 +33,10 @@ class PaydunyaController extends Controller
             \Paydunya\Checkout\Store::setPostalAddress("Dakar Plateau - Etablissement kheweul");
             \Paydunya\Checkout\Store::setWebsiteUrl("https://nafarbox.com");
             \Paydunya\Checkout\Store::setLogoUrl("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png");
-          \Paydunya\Checkout\Store::setCallbackUrl(
-    route('paydunya.callback', ['forfait' => $forfait->id])
+\Paydunya\Checkout\Store::setCallbackUrl(
+    'https://nafarbox.com/api/paydunya/callback/'.$forfait->id
 );
+
             
             // \Paydunya\Checkout\Store::setCallbackUrl("https://nafarbox.com/api/get-forfaits/".$forfait->id_forfait);
 
@@ -73,7 +74,7 @@ public function callback(Request $request)
     \Log::info('CALLBACK REÇU', $request->all());
 
     dd($request->all());
-    
+
     // Vérification de la signature
     if ($_POST['data']['hash'] !== hash('sha512', env('P_MasterKey'))) {
         return response()->json(['message' => 'Signature invalide'], 403);
