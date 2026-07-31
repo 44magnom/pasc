@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Forfait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 
 class PaydunyaController extends Controller
 {
