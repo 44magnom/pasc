@@ -50,6 +50,9 @@ class PaydunyaController extends Controller
                 $forfait->montant, // Prix total
                 // $forfait->description // Description
             );
+            // Données personnalisées
+$invoice->addCustomData("user_id", Auth::id());
+$invoice->addCustomData("forfait_id", $forfait->id);
 
             $invoice->setTotalAmount($forfait->montant);
 
@@ -62,23 +65,34 @@ class PaydunyaController extends Controller
             }
         }
 
-public function callback(Request $request, $forfait_id)
+public function callback(Request $request)
 {
-    // Vérifier auprès de PayDunya que le paiement est bien réussi
-    // (à adapter selon le SDK que tu utilises)
+    // Vérification de la signature
+    if ($_POST['data']['hash'] !== hash('sha512', env('P_MasterKey'))) {
+        return response()->json(['message' => 'Signature invalide'], 403);
+    }
 
-    $forfait = Forfait::findOrFail($forfait_id);
+    // Paiement réussi ?
+    if ($_POST['data']['status'] != 'completed') {
+        return response()->json(['message' => 'Paiement non validé'], 400);
+    }
+
+    $userId = $_POST['data']['custom_data']['user_id'];
+    $forfaitId = $_POST['data']['custom_data']['forfait_id'];
+
+    $user = User::findOrFail($userId);
+    $forfait = Forfait::findOrFail($forfaitId);
 
     Abonnement::create([
-        'user_id' => Auth::id(),
+        'user_id' => $user->id,
         'forfait_id' => $forfait->id,
         'date_debut' => now(),
         'date_fin' => now()->addDays($forfait->duree),
         'statut' => 'actif',
-        'reference_paiement' => $request->token, // ou le token PayDunya
+        'reference_paiement' => $_POST['data']['token'] ?? null,
     ]);
 
-    Auth::user()->update([
+    $user->update([
         'is_subscribed' => true,
     ]);
 
