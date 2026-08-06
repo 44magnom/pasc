@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Abonnement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
+use App\Models\User;
 use App\Models\Forfait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -100,4 +101,19 @@ public function store(Request $request, $forfait_id)
         return response()->json($forfaits);
     }
 
+    public function create2()
+{
+    $users = User::orderBy('name')->get();
+
+    $forfaits = Forfait::where('is_active', true)
+        ->orderBy('montant')
+        ->get();
+
+    return view('abonnements.manuel', compact(
+        'users',
+        'forfaits'
+    ));
+}
+
+   
 }

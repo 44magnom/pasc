@@ -40,6 +40,18 @@
 
                 <li class="nav-item">
 
+<!-- <form method="POST"
+      action="{{ route('abonnement.manuel') }}">
+    @csrf
+
+    <button class="btn btn-success">
+        Activer manuellement
+    </button>
+</form> -->
+
+                </li>
+                <li class="nav-item">
+
                     <a class="nav-link"
                        href="{{ route('emplois.index') }}">
                         Objectif du jour

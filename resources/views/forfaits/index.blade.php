@@ -130,16 +130,22 @@
 
                         <div class="d-grid">
 
-                            <a href="{{ route('forfaits.show',$forfait->id) }}"
+                            <!-- <a href="{{ route('forfaits.show',$forfait->id) }}"
                                class="btn btn-success btn-lg">
 
                                 S'abonner
 
-                            </a>
+                            </a> -->
+<a href="https://pay.wave.com/m/M_sn_7cN-yXi69UHq/c/sn/?amount={{ $forfait->montant }}"
+   class="btn btn-success btn-lg">
 
-                                        <a href="{{ route('paydunya.payment', ['id_forfait' => $forfait->id]) }}" class="btn btn-success">
+    S'abonner
+
+</a>
+
+                                        <!-- <a href="{{ route('paydunya.payment', ['id_forfait' => $forfait->id]) }}" class="btn btn-success">
                 S'abonner à ce forfait
-            </a>
+            </a> -->
 
 
                         </div>
@@ -154,6 +160,53 @@
 
     </div>
 
+<!-- <div class="alert border shadow-sm mb-3 "
+     style="background-color:#F8F3EB; border-color:#D2B48C; color:#654321;">
+
+    <i class="bi bi-info-circle-fill me-2"></i>
+
+    Après paiement, votre abonnement sera activé dans les plus brefs délais(30 minutes au plutard).
+
+</div> -->
+
+
+@include('forfaits.confirme')
+
+
+
+<div class="card border shadow-sm mt-4" style="border-color:#D2B48C;">
+    <div class="card-body text-center" style="background:#F8F3EB;">
+
+        <h5 class="fw-bold mb-3" style="color:#654321;">
+            <i class="bi bi-headset"></i> Service client
+        </h5>
+
+        <p class="text-muted mb-4">
+            Une question concernant votre abonnement ou votre paiement ?
+            Notre service client est à votre disposition.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+            <a href="tel:+221785903265"
+               class="btn btn-outline-primary">
+                <i class="bi bi-telephone-fill"></i>
+                Appeler
+            </a>
+
+            <a href="https://wa.me/221785903265"
+               target="_blank"
+               class="btn btn-success">
+                <i class="bi bi-whatsapp"></i>
+                WhatsApp
+            </a>
+
+        </div>
+
+    </div>
 </div>
 
+
+</div>
 @endsection
+

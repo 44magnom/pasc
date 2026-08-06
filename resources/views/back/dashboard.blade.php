@@ -189,6 +189,20 @@ body{
 
 @endif
 
+@if(!$user->is_subscribed)
+    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+
+        <div>
+            <strong>Passez à NafarBox Premium</strong><br>
+            Débloquez toutes les fonctionnalités sans limitation.
+        </div>
+
+        <a href="{{ route('forfaits.index') }}" class="btn btn-success">
+            <i class="bi bi-gem"></i> Voir les forfaits
+        </a>
+
+    </div>
+@endif
 
 <div class="hero">
 

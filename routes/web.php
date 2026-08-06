@@ -111,4 +111,9 @@ Route::get('/paydunya/payment', [PaydunyaController::class, 'store'])->name('pay
 Route::get('/cancel', [ReponseController::class, 'cancel'])->name('paydunya.cancel');
 Route::get('/success', [ReponseController::class, 'success'])->name('paydunya.succes');
 
+Route::get('/admin/abonnement-manuel', [AbonnementController::class, 'create2'])
+    ->name('abonnement.manuel');
+
+Route::get('/admin/abonnement-manuel', [AbonnementController::class, 'create'])
+    ->name('abonnement.manuel');
 require __DIR__.'/auth.php';
