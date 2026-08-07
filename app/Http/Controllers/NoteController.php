@@ -29,7 +29,7 @@ class NoteController extends Controller
 public function create()
 {
     $matieres = Matiere::with('chapitres')->get();
-    dd('bon');
+
   
     return view('notes.create', compact('matieres'));
 }

@@ -1,10 +1,16 @@
 "use strict";
 
-const CACHE_NAME = "offline-cache-v1";
-const OFFLINE_URL = '/offline.html';
+"use strict";
+
+const CACHE_NAME = "offline-cache-v2";
 
 const filesToCache = [
-    OFFLINE_URL
+    "/",
+    "/notes/create",
+    "/css/app.css",
+    "/js/app.js",
+    "/js/offline-db.js",
+    "/offline.html"
 ];
 
 self.addEventListener("install", (event) => {

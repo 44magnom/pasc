@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Abonnement\AbonnementController;
 use App\Http\Controllers\Paiement\PaydunyaController;
 // use App\Http\Controllers\AbonnementController;
+use App\Http\Controllers\OfflineController;
 
 
 /*
@@ -26,3 +27,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/paydunya/callback/{forfait}', [PaydunyaController::class, 'callback'])
     ->name('paydunya.callback');
+Route::post('/offline/note', [OfflineController::class, 'store'])
+    ->name('offline.note');

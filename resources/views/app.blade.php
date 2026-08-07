@@ -17,8 +17,10 @@
 
     <div class="container mt-4">
         @yield('content')
+
    
     </div>
+     @include('front.offline')
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     @include('front.menubas')
    
@@ -33,5 +35,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     
     @RegisterServiceWorkerScript
+    <script src="{{ asset('js/offline-db.js') }}"></script>
 </body>
 </html>

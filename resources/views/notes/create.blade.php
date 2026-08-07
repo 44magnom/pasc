@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <form action="{{ route('notes.store') }}" method="POST">
+    <form id="formNote" action="{{ route('notes.store') }}" method="POST">
 
         @csrf
 
@@ -208,4 +208,58 @@ ClassicEditor
         min-height: 150px;
     }
 </style>
+@endpush
+
+@push('scripts')
+
+<script>
+
+document.getElementById("formNote").addEventListener("submit", function(e){
+
+    // Si Internet est disponible,
+    // Laravel fait son travail normalement
+    
+    if(navigator.onLine){
+        return;
+    }
+
+    // Sinon on empêche l'envoi
+    e.preventDefault();
+
+    let note = {
+
+        local_id: crypto.randomUUID(),
+
+        matiere_id: document.getElementById("matiere").value,
+
+        chapitre_id: document.getElementById("chapitre").value,
+
+        recto: document.getElementById("recto").value,
+
+        verso: document.getElementById("verso").value,
+
+        nombre_revision:0,
+
+        prochaine_revision:new Date().toISOString().split("T")[0],
+
+        is_revised:true,
+
+        is_synced:false,
+
+        created_at:new Date()
+
+    };
+    console.log("Le formulaire est soumis");
+
+    saveOfflineNote(note);
+    console.log(note);
+
+    alert("Votre note a été enregistrée hors connexion.");
+
+    this.reset();
+
+});
+
+</script>
+
 @endpush
