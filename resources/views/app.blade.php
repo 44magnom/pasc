@@ -8,6 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta name="theme-color" content="#F3EBDD">
+    @PwaHead 
 </head>
 <body>
 
@@ -31,6 +32,6 @@
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     
-    
+    @RegisterServiceWorkerScript
 </body>
 </html>
