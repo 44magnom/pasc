@@ -1,53 +1,124 @@
 "use strict";
 
-"use strict";
+const CACHE_NAME = "offline-cache-v3";
+const OFFLINE_URL = "/offline.html";
 
-const CACHE_NAME = "offline-cache-v2";
-
-const filesToCache = [
-    "/",
-    "/notes/create",
-    "/css/app.css",
-    "/js/app.js",
+// Fichiers indispensables
+const FILES_TO_CACHE = [
+    "/offline.html",
     "/js/offline-db.js",
-    "/offline.html"
+    "/css/app.css",
+    "/js/app.js"
 ];
 
+// Installation
 self.addEventListener("install", (event) => {
+
+    self.skipWaiting();
+
     event.waitUntil(
+
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(filesToCache))
+            .then(cache => cache.addAll(FILES_TO_CACHE))
+
     );
+
 });
 
-self.addEventListener("fetch", (event) => {
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            fetch(event.request)
-                .catch(() => {
-                    return caches.match(OFFLINE_URL);
-                })
-        );
-    } else {
-        event.respondWith(
-            caches.match(event.request)
-                .then((response) => {
-                    return response || fetch(event.request);
-                })
-        );
-    }
-});
+// Activation
+self.addEventListener("activate", (event) => {
 
-self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
+
+        caches.keys().then(keys => {
+
             return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
+
+                keys.map(key => {
+
+                    if (key !== CACHE_NAME) {
+
+                        return caches.delete(key);
+
                     }
+
                 })
+
             );
+
         })
+
     );
+
+    self.clients.claim();
+
+});
+
+// Requêtes
+self.addEventListener("fetch", (event) => {
+
+    // On ne met jamais l'API en cache
+    if (event.request.url.includes("/api/")) {
+
+        event.respondWith(fetch(event.request));
+
+        return;
+
+    }
+
+    event.respondWith(
+
+        caches.match(event.request)
+
+            .then(cachedResponse => {
+
+                // Si la ressource est déjà dans le cache
+                if (cachedResponse) {
+
+                    return cachedResponse;
+
+                }
+
+                // Sinon on va la chercher sur Internet
+                return fetch(event.request)
+
+                    .then(networkResponse => {
+
+                        // On ne met en cache que les requêtes GET réussies
+                        if (
+                            event.request.method === "GET" &&
+                            networkResponse.status === 200
+                        ) {
+
+                            const clone = networkResponse.clone();
+
+                            caches.open(CACHE_NAME)
+
+                                .then(cache => {
+
+                                    cache.put(event.request, clone);
+
+                                });
+
+                        }
+
+                        return networkResponse;
+
+                    })
+
+                    .catch(() => {
+
+                        // Si c'est une navigation HTML
+                        if (event.request.mode === "navigate") {
+
+                            return caches.match(OFFLINE_URL);
+
+                        }
+
+                    });
+
+            })
+
+    );
+
 });
