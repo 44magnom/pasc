@@ -1,15 +1,29 @@
 "use strict";
 
-const CACHE_NAME = "offline-cache-v7";
+
+/*
+|--------------------------------------------------------------------------
+| CONFIGURATION
+|--------------------------------------------------------------------------
+*/
+
+const CACHE_NAME = "offline-cache-v8";
 
 const OFFLINE_URL = "/offline.html";
 
+
 const FILES_TO_CACHE = [
+
     "/offlineView/index.html",
+
     "/offlineView/chapitres.html",
+
     "/offlineView/notes.html",
+
     "/offlineView/creer-note.html",
+
     "/offline.html"
+
 ];
 
 
@@ -25,19 +39,75 @@ self.addEventListener("install", function (event) {
 
         caches.open(CACHE_NAME)
 
-            .then(function (cache) {
+            .then(async function (cache) {
 
                 console.log(
-                    "📦 Mise en cache des pages offline..."
+                    "📦 Installation du cache :",
+                    CACHE_NAME
                 );
 
-                return cache.addAll(
-                    FILES_TO_CACHE
+
+                for (const url of FILES_TO_CACHE) {
+
+                    try {
+
+                        const response =
+                            await fetch(url);
+
+
+                        if (!response.ok) {
+
+                            console.error(
+                                "❌ Fichier inaccessible :",
+                                url,
+                                response.status
+                            );
+
+                            continue;
+
+                        }
+
+
+                        await cache.put(
+                            url,
+                            response
+                        );
+
+
+                        console.log(
+                            "✅ Mis en cache :",
+                            url
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "❌ Erreur pour :",
+                            url,
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                console.log(
+                    "✅ Installation du cache terminée."
                 );
 
             })
 
     );
+
+
+    /*
+    | Permet au nouveau Service Worker
+    | de devenir actif immédiatement.
+    */
+
+    self.skipWaiting();
 
 });
 
@@ -52,30 +122,49 @@ self.addEventListener("activate", function (event) {
 
     event.waitUntil(
 
-        caches.keys().then(function (cacheNames) {
+        caches.keys()
 
-            return Promise.all(
+            .then(function (cacheNames) {
 
-                cacheNames.map(function (cacheName) {
+                return Promise.all(
 
-                    if (cacheName !== CACHE_NAME) {
+                    cacheNames.map(
+                        function (cacheName) {
 
-                        console.log(
-                            "🗑️ Suppression ancien cache :",
-                            cacheName
-                        );
+                            if (
+                                cacheName !== CACHE_NAME
+                            ) {
 
-                        return caches.delete(
-                            cacheName
-                        );
+                                console.log(
+                                    "🗑️ Suppression ancien cache :",
+                                    cacheName
+                                );
 
-                    }
 
-                })
+                                return caches.delete(
+                                    cacheName
+                                );
 
-            );
+                            }
 
-        })
+                        }
+                    )
+
+                );
+
+            })
+
+            .then(function () {
+
+                /*
+                | Le nouveau Service Worker
+                | prend immédiatement le contrôle
+                | des pages ouvertes.
+                */
+
+                return self.clients.claim();
+
+            })
 
     );
 
@@ -90,13 +179,16 @@ self.addEventListener("activate", function (event) {
 
 self.addEventListener("fetch", function (event) {
 
+
     /*
     |--------------------------------------------------------------------------
-    | Pages HTML
+    | Navigation HTML
     |--------------------------------------------------------------------------
     */
 
-    if (event.request.mode === "navigate") {
+    if (
+        event.request.mode === "navigate"
+    ) {
 
         event.respondWith(
 
@@ -111,8 +203,9 @@ self.addEventListener("fetch", function (event) {
 
 
                     /*
-                    | Si l'utilisateur demande directement
-                    | offlineView/index.html
+                    |--------------------------------------------------------------------------
+                    | Si c'est une page offlineView
+                    |--------------------------------------------------------------------------
                     */
 
                     if (
@@ -122,14 +215,19 @@ self.addEventListener("fetch", function (event) {
                     ) {
 
                         return caches.match(
-                            event.request
+                            event.request,
+                            {
+                                ignoreSearch: true
+                            }
                         );
 
                     }
 
 
                     /*
-                    | Sinon, afficher notre page offline
+                    |--------------------------------------------------------------------------
+                    | Sinon afficher offline.html
+                    |--------------------------------------------------------------------------
                     */
 
                     return caches.match(
@@ -140,6 +238,7 @@ self.addEventListener("fetch", function (event) {
 
         );
 
+
         return;
 
     }
@@ -147,7 +246,7 @@ self.addEventListener("fetch", function (event) {
 
     /*
     |--------------------------------------------------------------------------
-    | CSS / JS / autres fichiers
+    | CSS / JS / images / autres ressources
     |--------------------------------------------------------------------------
     */
 
@@ -159,8 +258,16 @@ self.addEventListener("fetch", function (event) {
 
         .then(function (response) {
 
-            return response ||
-                   fetch(event.request);
+            if (response) {
+
+                return response;
+
+            }
+
+
+            return fetch(
+                event.request
+            );
 
         })
 
