@@ -4,7 +4,7 @@
 let db;
 
 const DB_NAME = "nafarbox";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
