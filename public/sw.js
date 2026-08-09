@@ -230,9 +230,9 @@ self.addEventListener("fetch", function (event) {
                     |--------------------------------------------------------------------------
                     */
 
-                    return caches.match(
-                        OFFLINE_URL
-                    );
+              return caches.match(
+    "/offlineView/index.html"
+);
 
                 })
 
