@@ -90,6 +90,7 @@
 <a href="#"
    class="text-decoration-none"
    style="color:#654321;"
+      data-id="{{ $note->id }}"
    data-bs-toggle="modal"
    data-bs-target="#noteModal"
    data-recto="{{ $note->recto }}"
@@ -98,7 +99,9 @@
     {{ Str::limit($note->recto, 80) }}
 
 </a>
-            </td>
+        
+
+</td>
 
             <!-- <td class="text-center"> -->
 

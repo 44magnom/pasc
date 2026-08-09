@@ -1,10 +1,60 @@
 let db;
 
-const request = indexedDB.open("nafarbox", 1);
+const DB_NAME = "nafarbox";
+const DB_VERSION = 2;
+
+const request = indexedDB.open(DB_NAME, DB_VERSION);
 
 request.onupgradeneeded = function (event) {
 
     db = event.target.result;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MATIERES
+    |--------------------------------------------------------------------------
+    */
+
+    if (!db.objectStoreNames.contains("matieres")) {
+
+        const store = db.createObjectStore("matieres", {
+            keyPath: "id"
+        });
+
+        store.createIndex(
+            "user_id",
+            "user_id",
+            { unique: false }
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHAPITRES
+    |--------------------------------------------------------------------------
+    */
+
+    if (!db.objectStoreNames.contains("chapitres")) {
+
+        const store = db.createObjectStore("chapitres", {
+            keyPath: "id"
+        });
+
+        store.createIndex(
+            "matiere_id",
+            "matiere_id",
+            { unique: false }
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTES
+    |--------------------------------------------------------------------------
+    */
 
     if (!db.objectStoreNames.contains("notes")) {
 
@@ -12,30 +62,84 @@ request.onupgradeneeded = function (event) {
             keyPath: "local_id"
         });
 
-        store.createIndex("is_synced", "is_synced");
+        store.createIndex(
+            "id",
+            "id",
+            { unique: false }
+        );
+
+        store.createIndex(
+            "chapitre_id",
+            "chapitre_id",
+            { unique: false }
+        );
+
+        store.createIndex(
+            "is_synced",
+            "is_synced",
+            { unique: false }
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILE D'ATTENTE
+    |--------------------------------------------------------------------------
+    */
+
+    if (!db.objectStoreNames.contains("sync_queue")) {
+
+        const store = db.createObjectStore("sync_queue", {
+            keyPath: "id",
+            autoIncrement: true
+        });
+
+        store.createIndex(
+            "table",
+            "table",
+            { unique: false }
+        );
+
+        store.createIndex(
+            "action",
+            "action",
+            { unique: false }
+        );
+
+        store.createIndex(
+            "local_id",
+            "local_id",
+            { unique: false }
+        );
     }
 
 };
+
 
 request.onsuccess = function (event) {
 
     db = event.target.result;
 
-    console.log("Base locale prête.");
+    console.log("✅ Base locale prête.");
 
     if (navigator.onLine) {
+
         synchroniserNotes();
+
     }
 
 };
 
-request.onerror = function () {
 
-    console.log("Erreur IndexedDB");
+request.onerror = function (event) {
+
+    console.error(
+        "❌ Erreur IndexedDB :",
+        event.target.error
+    );
 
 };
-
-
 
 /******************************************
  Enregistrer une note

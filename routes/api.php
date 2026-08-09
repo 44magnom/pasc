@@ -29,3 +29,6 @@ Route::post('/paydunya/callback/{forfait}', [PaydunyaController::class, 'callbac
     ->name('paydunya.callback');
 Route::post('/offline/note', [OfflineController::class, 'store'])
     ->name('offline.note');
+
+    Route::get('/offline/sync', [OfflineController::class, 'sync'])
+    ->middleware('auth');

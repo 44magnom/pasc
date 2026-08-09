@@ -8,7 +8,15 @@
 
                 <h5 class="modal-title">
                     📖 Détails de la note
-                </h5>
+                </h5><a href="#"
+   id="btnModifierNote"
+   class="btn btn-primary ms-auto me-2"
+   title="Modifier"
+     style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
+
+    <i class="bi bi-pencil-square"></i>
+
+</a>
 
                 <button type="button"
                         class="btn-close"
@@ -166,17 +174,118 @@
 
 <script>
 
-const noteModal = document.getElementById('noteModal');
+document.addEventListener('DOMContentLoaded', function () {
 
-noteModal.addEventListener('show.bs.modal', function (event) {
+    const noteModal = document.getElementById('noteModal');
 
-    const bouton = event.relatedTarget;
+    if (!noteModal) {
+        console.error('❌ noteModal introuvable');
+        return;
+    }
 
-    document.getElementById('modalRecto').innerHTML =
-        bouton.dataset.recto;
 
-    document.getElementById('modalVerso').innerHTML =
-        bouton.dataset.verso;
+    /*
+    |--------------------------------------------------------------------------
+    | Ouverture du modal
+    |--------------------------------------------------------------------------
+    */
+
+    noteModal.addEventListener('show.bs.modal', function (event) {
+
+        // Le lien Recto sur lequel l'utilisateur vient de cliquer
+        const bouton = event.relatedTarget;
+
+        if (!bouton) {
+            console.error('❌ Aucun bouton déclencheur');
+            return;
+        }
+
+
+        // Récupérer les données
+        const noteId = bouton.getAttribute('data-id');
+        const recto = bouton.getAttribute('data-recto') || '';
+        const verso = bouton.getAttribute('data-verso') || '';
+
+
+        console.log('📖 ID note :', noteId);
+
+
+        // Afficher la note
+        document.getElementById('modalRecto').innerHTML = recto;
+
+        document.getElementById('modalVerso').innerHTML = verso;
+
+
+        // Récupérer le crayon
+        const boutonModifier =
+            document.getElementById('btnModifierNote');
+
+
+        if (!boutonModifier) {
+            console.error('❌ btnModifierNote introuvable');
+            return;
+        }
+
+
+        // Mettre l'ID sur le crayon
+        boutonModifier.setAttribute(
+            'data-id',
+            noteId
+        );
+
+
+        console.log(
+            '✏️ ID placé sur le crayon :',
+            boutonModifier.getAttribute('data-id')
+        );
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clic sur le crayon
+    |--------------------------------------------------------------------------
+    */
+
+    document.addEventListener('click', function (event) {
+
+        const boutonModifier =
+            event.target.closest('#btnModifierNote');
+
+
+        if (!boutonModifier) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        const noteId =
+            boutonModifier.getAttribute('data-id');
+
+
+        console.log(
+            '🚀 Modification note :',
+            noteId
+        );
+
+
+        if (!noteId) {
+
+            console.error(
+                '❌ Aucun ID trouvé sur le crayon'
+            );
+
+            return;
+        }
+
+
+        window.location.href =
+            '/notes/' + noteId + '/edit';
+
+    });
 
 });
 

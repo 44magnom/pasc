@@ -105,4 +105,25 @@ public function store(Request $request)
     {
         //
     }
+
+    public function sync()
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Utilisateur non authentifié.'
+        ], 401);
+    }
+
+    $matieres = $user->matieres()
+        ->with('chapitres.notes')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'matieres' => $matieres,
+    ]);
+}
 }

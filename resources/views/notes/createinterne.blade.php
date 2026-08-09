@@ -2,115 +2,94 @@
 
 @section('content')
 
-<div class="container mt-4">
-@if(session('error'))
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-<!-- Bannière -->
-<div class="card shadow mb-4"
-     style="background-color:#F8F3EB; border:1px solid #D2B48C;">
+<div class="card-body text-center">
 
-    <div class="card-body text-center">
+    <h4 class="mb-1 fw-bold" style="color:#654321;">
+        {{ $chapitre->matiere->matiere }}
+    </h4>
 
-        <h4 class="mb-1 fw-bold" style="color:#654321;">
-            {{ $chapitre->matiere->matiere }}
-        </h4>
-
-        <p class="mb-0" style="font-size:1.05rem; color:#654321;">
-            {{ $chapitre->chapitre }}
-        </p>
-
-    </div>
+    <p class="mb-0" style="font-size:1.05rem; color:#654321;">
+        {{ $chapitre->chapitre }}
+    </p>
 
 </div>
 
-<h4 class="fw-semibold mb-4" style="color:#654321;">
-    Ajouter une note
-</h4>
-@if(session('success'))
-    <div class="alert"
-         style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        {{ session('success') }}
+
+<form action="{{ route('notes.store') }}"
+      method="POST"
+      id="formNote">
+
+    @csrf
+
+    {{-- IDs --}}
+    <input type="hidden"
+           name="matiere_id"
+           id="matiere_id"
+           value="{{ $chapitre->matiere->id }}">
+
+    <input type="hidden"
+           name="chapitre_id"
+           id="chapitre_id"
+           value="{{ $chapitre->id }}">
+
+
+    {{-- RECTO --}}
+    <div class="mb-3">
+
+        <label for="recto" class="form-label">
+            Recto
+        </label>
+
+        <textarea
+            id="recto"
+            name="recto"
+            class="form-control @error('recto') is-invalid @enderror"
+            rows="2"
+            required>{{ old('recto') }}</textarea>
+
+        @error('recto')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+        @enderror
+
     </div>
-@endif
 
-    <form action="{{ route('notes.store') }}"
-          method="POST"
-          id="formNote">
 
-        @csrf
+    {{-- VERSO --}}
+    <div class="mb-3">
 
-        <!-- IDs cachés -->
-        <input type="hidden"
-               name="matiere_id"
-               value="{{ $chapitre->matiere->id }}">
+        <label for="verso" class="form-label">
+            Verso
+        </label>
 
-        <input type="hidden"
-               name="chapitre_id"
-               value="{{ $chapitre->id }}">
+        <textarea
+            id="verso"
+            name="verso"
+            class="form-control @error('verso') is-invalid @enderror"
+            rows="6">{{ old('verso') }}</textarea>
 
-        <!-- Recto -->
-        <div class="mb-3">
+        @error('verso')
+            <div class="text-danger mt-1">
+                {{ $message }}
+            </div>
+        @enderror
 
-            <label for="recto" class="form-label">
-                Recto
-            </label>
+    </div>
 
-            <textarea
-                id="recto"
-                name="recto"
-                class="form-control @error('recto') is-invalid @enderror"
-                rows="1"
-                required>{{ old('recto') }}</textarea>
 
-            @error('recto')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
+    <div class="text-end">
 
-        </div>
+        <button type="submit"
+                class="btn btn-primary">
 
-        <!-- Verso -->
-        <div class="mb-3">
+            Enregistrer
 
-            <label for="verso" class="form-label">
-                Verso
-            </label>
+        </button>
 
-            <textarea
-                id="verso"
-                name="verso"
-                class="form-control @error('verso') is-invalid @enderror"
-                rows="6">{{ old('verso') }}</textarea>
+    </div>
 
-            @error('verso')
-                <div class="text-danger mt-1">
-                    {{ $message }}
-                </div>
-            @enderror
-
-        </div>
-
-        <div class="text-end">
-
-<button type="submit"
-        class="btn"
-        style="background-color:#F8F3EB; color:#654321; border:1px solid #D2B48C;">
-    <i class="bi bi-check-circle me-1"></i>
-    Enregistrer
-</button>
-
-        </div>
-
-    </form>
-
-</div>
+</form>
 
 @endsection
 
@@ -120,7 +99,7 @@
 <style>
 
 .ck-editor__editable_inline {
-    min-height: 180px;
+    min-height: 150px;
 }
 
 </style>
@@ -132,7 +111,14 @@
 
 <script>
 
-let versoEditor;
+let versoEditor = null;
+
+
+/*
+|--------------------------------------------------------------------------
+| CKEDITOR
+|--------------------------------------------------------------------------
+*/
 
 ClassicEditor
     .create(document.querySelector('#verso'))
@@ -143,16 +129,130 @@ ClassicEditor
     })
     .catch(error => {
 
-        console.error(error);
+        console.error("Erreur CKEditor :", error);
 
     });
 
-document.getElementById('formNote').addEventListener('submit', function () {
+
+/*
+|--------------------------------------------------------------------------
+| FORMULAIRE
+|--------------------------------------------------------------------------
+*/
+
+document.getElementById("formNote").addEventListener("submit", function(e) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | SI INTERNET EST DISPONIBLE
+    |--------------------------------------------------------------------------
+    |
+    | Laravel traite normalement le formulaire.
+    |
+    */
+
+    if (navigator.onLine) {
+
+        return;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HORS CONNEXION
+    |--------------------------------------------------------------------------
+    */
+
+    e.preventDefault();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Récupérer le contenu CKEditor
+    |--------------------------------------------------------------------------
+    */
+
+    let verso = "";
 
     if (versoEditor) {
 
-        document.getElementById('verso').value =
-            versoEditor.getData();
+        verso = versoEditor.getData();
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Récupérer les données
+    |--------------------------------------------------------------------------
+    */
+
+    const note = {
+
+        local_id: crypto.randomUUID(),
+
+        matiere_id:
+            document.getElementById("matiere_id").value,
+
+        chapitre_id:
+            document.getElementById("chapitre_id").value,
+
+        recto:
+            document.getElementById("recto").value,
+
+        verso: verso,
+
+        nombre_revision: 0,
+
+        prochaine_revision:
+            new Date().toISOString().split("T")[0],
+
+        is_revised: true,
+
+        is_synced: false,
+
+        created_at: new Date()
+
+    };
+
+
+    console.log("📦 Note hors connexion :", note);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enregistrer dans IndexedDB
+    |--------------------------------------------------------------------------
+    */
+
+    saveOfflineNote(note);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Message utilisateur
+    |--------------------------------------------------------------------------
+    */
+
+    alert(
+        "Votre note a été enregistrée hors connexion. " +
+        "Elle sera synchronisée automatiquement lorsque la connexion reviendra."
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vider le formulaire
+    |--------------------------------------------------------------------------
+    */
+
+    document.getElementById("recto").value = "";
+
+
+    if (versoEditor) {
+
+        versoEditor.setData("");
 
     }
 
