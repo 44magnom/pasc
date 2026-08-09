@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NafarBox - Notes</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #F8F3EB;
+            color: #654321;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #notes {
+            display: grid;
+            gap: 15px;
+        }
+
+        .note {
+            display: block;
+            padding: 20px;
+            background: white;
+            border: 1px solid #D2B48C;
+            border-radius: 10px;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        .note-recto {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .note-verso {
+            margin-top: 10px;
+        }
+
+        .retour {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <a href="javascript:history.back()"
+       class="retour">
+
+        ← Retour
+
+    </a>
+<a href="#"
+   id="btnCreerNote"
+   class="btn"
+   style="
+       background-color:#F8F3EB;
+       color:#654321;
+       border:1px solid #D2B48C;
+   ">
+    ➕ Ajouter une note
+</a>
+    <h1>📝 Notes</h1>
+
+    <div id="notes"></div>
+
+    <div id="message">
+        Chargement...
+    </div>
+
+
+    <script>
+
+        /*
+        |--------------------------------------------------------------------------
+        | Récupérer le chapitre dans l'URL
+        |--------------------------------------------------------------------------
+        */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const chapitreId =
+            params.get('id');
+
+
+        console.log(
+            "📖 ID chapitre :",
+            chapitreId
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ouvrir IndexedDB
+        |--------------------------------------------------------------------------
+        */
+
+        const request =
+            indexedDB.open("nafarbox", 3);
+
+
+        request.onsuccess = function (event) {
+
+            const db =
+                event.target.result;
+
+            console.log(
+                "✅ IndexedDB ouverte"
+            );
+
+            chargerNotes(db);
+
+        };
+
+
+        request.onerror = function (event) {
+
+            console.error(
+                "❌ Erreur IndexedDB :",
+                event.target.error
+            );
+
+        };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Charger les notes du chapitre
+        |--------------------------------------------------------------------------
+        */
+
+        function chargerNotes(db)
+        {
+
+            const transaction =
+                db.transaction(
+                    "notes",
+                    "readonly"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    "notes"
+                );
+
+
+            const index =
+                store.index(
+                    "chapitre_id"
+                );
+
+
+            const request =
+                index.getAll(
+                    Number(chapitreId)
+                );
+
+
+            request.onsuccess =
+                function ()
+                {
+
+                    const notes =
+                        request.result;
+
+
+                    console.log(
+                        "📝 Notes trouvées :",
+                        notes
+                    );
+
+
+                    afficherNotes(notes);
+
+                };
+
+
+            request.onerror =
+                function (event)
+                {
+
+                    console.error(
+                        "❌ Erreur lecture notes :",
+                        event.target.error
+                    );
+
+                };
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Afficher les notes
+        |--------------------------------------------------------------------------
+        */
+
+        function afficherNotes(notes)
+        {
+
+            const container =
+                document.getElementById(
+                    'notes'
+                );
+
+
+            const message =
+                document.getElementById(
+                    'message'
+                );
+
+
+            container.innerHTML = "";
+
+
+            if (notes.length === 0) {
+
+                message.textContent =
+                    "Aucune note disponible hors connexion.";
+
+                return;
+
+            }
+
+
+            message.textContent =
+                notes.length +
+                " note(s) disponible(s).";
+
+
+            notes.forEach(
+                function (note)
+                {
+
+                    const div =
+                        document.createElement(
+                            'div'
+                        );
+
+
+                    div.className =
+                        "note";
+
+
+                    div.innerHTML = `
+
+                        <div class="note-recto">
+                            ${note.recto}
+                        </div>
+
+                        <div class="note-verso">
+                            ${note.verso}
+                        </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+    
+<script>
+
+    const btnCreerNote =
+        document.getElementById('btnCreerNote');
+
+
+    if (chapitreId) {
+
+        btnCreerNote.href =
+            '/offlineView/creer-note.html?id=' +
+            chapitreId;
+
+    }
+
+</script>
+</body>
+
+</html>

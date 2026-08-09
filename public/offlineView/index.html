@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NafarBox - Mes matières</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #F8F3EB;
+            color: #654321;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #matieres {
+            display: grid;
+            gap: 15px;
+        }
+
+        .matiere {
+            display: block;
+            padding: 20px;
+            background: white;
+            border: 1px solid #D2B48C;
+            border-radius: 10px;
+            color: #654321;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .matiere:hover {
+            background: #F8F3EB;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>📚 Mes matières</h1>
+
+    <div id="matieres"></div>
+
+    <div id="message">
+        Chargement...
+    </div>
+
+
+    <script>
+
+        /*
+        |--------------------------------------------------------------------------
+        | OUVRIR INDEXEDDB
+        |--------------------------------------------------------------------------
+        */
+
+        const request =
+            indexedDB.open("nafarbox", 3);
+
+
+        request.onsuccess = function (event) {
+
+            const db = event.target.result;
+
+            console.log(
+                "✅ IndexedDB ouverte"
+            );
+
+            chargerMatieres(db);
+
+        };
+
+
+        request.onerror = function (event) {
+
+            console.error(
+                "❌ Erreur IndexedDB :",
+                event.target.error
+            );
+
+            document.getElementById('message').textContent =
+                "Impossible d'ouvrir la base locale.";
+
+        };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RECUPERER LES MATIERES
+        |--------------------------------------------------------------------------
+        */
+
+        function chargerMatieres(db)
+        {
+
+            const transaction =
+                db.transaction(
+                    "matieres",
+                    "readonly"
+                );
+
+
+            const store =
+                transaction.objectStore("matieres");
+
+
+            const request =
+                store.getAll();
+
+
+            request.onsuccess = function ()
+            {
+
+                const matieres =
+                    request.result;
+
+
+                console.log(
+                    "📚 Matières trouvées :",
+                    matieres
+                );
+
+
+                afficherMatieres(matieres);
+
+            };
+
+
+            request.onerror = function (event)
+            {
+
+                console.error(
+                    "❌ Erreur lecture matières :",
+                    event.target.error
+                );
+
+            };
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AFFICHER LES MATIERES
+        |--------------------------------------------------------------------------
+        */
+
+        function afficherMatieres(matieres)
+        {
+
+            const container =
+                document.getElementById('matieres');
+
+
+            const message =
+                document.getElementById('message');
+
+
+            container.innerHTML = "";
+
+
+            if (matieres.length === 0) {
+
+                message.textContent =
+                    "Aucune matière disponible hors connexion.";
+
+                return;
+
+            }
+
+
+            message.textContent =
+                matieres.length +
+                " matière(s) disponible(s).";
+
+
+            matieres.forEach(function (matiere)
+            {
+
+                const lien =
+                    document.createElement('a');
+
+
+                lien.className =
+                    "matiere";
+
+
+                lien.textContent =
+                    "📚 " + matiere.matiere;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | POUR LA PROCHAINE ETAPE
+                |--------------------------------------------------------------------------
+                |
+                | On met déjà l'ID de la matière.
+                |
+                */
+
+                lien.dataset.id =
+                    matiere.id;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | On ne définit pas encore le lien.
+                |--------------------------------------------------------------------------
+                */
+
+               lien.href ="/offlineView/chapitres.html?id=" + matiere.id;
+
+
+                container.appendChild(lien);
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>

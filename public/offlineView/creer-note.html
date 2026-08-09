@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NafarBox - Nouvelle note</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #F8F3EB;
+            color: #654321;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #chapitreNom {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #D2B48C;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        #recto {
+            min-height: 80px;
+        }
+
+        #verso {
+            min-height: 180px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #D2B48C;
+            border-radius: 8px;
+            background: #654321;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .retour {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <a href="#"
+       id="btnRetour"
+       class="retour">
+
+        ← Retour aux notes
+
+    </a>
+
+
+    <h1>➕ Nouvelle note</h1>
+
+
+    <div id="chapitreNom">
+        Chargement du chapitre...
+    </div>
+
+
+    <form id="formNote">
+
+
+        <label for="recto">
+            Recto
+        </label>
+
+
+        <textarea
+            id="recto"
+            placeholder="Écrivez le recto de la note..."
+            required></textarea>
+
+
+        <label for="verso">
+            Verso
+        </label>
+
+
+        <textarea
+            id="verso"
+            placeholder="Écrivez le verso de la note..."
+            required></textarea>
+
+
+        <button type="submit">
+            💾 Enregistrer la note
+        </button>
+
+
+    </form>
+
+
+    <div id="message"></div>
+
+
+</div>
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    let db = null;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHAPITRE DANS L'URL
+    |--------------------------------------------------------------------------
+    */
+
+    const params = new URLSearchParams(
+        window.location.search
+    );
+
+    const chapitreId = params.get('id');
+
+
+    console.log(
+        "📖 Chapitre de la nouvelle note :",
+        chapitreId
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOUTON RETOUR
+    |--------------------------------------------------------------------------
+    */
+
+    const btnRetour =
+        document.getElementById('btnRetour');
+
+
+    if (chapitreId && btnRetour) {
+
+        btnRetour.href =
+            '/offlineView/notes.html?id=' +
+            chapitreId;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | OUVRIR INDEXEDDB
+    |--------------------------------------------------------------------------
+    */
+
+    const request =
+        indexedDB.open('nafarbox', 3);
+
+
+    request.onsuccess = function (event) {
+
+        db = event.target.result;
+
+        console.log(
+            "✅ IndexedDB ouverte"
+        );
+
+
+        chargerChapitre();
+
+    };
+
+
+    request.onerror = function (event) {
+
+        console.error(
+            "❌ Erreur IndexedDB :",
+            event.target.error
+        );
+
+    };
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHARGER LE CHAPITRE
+    |--------------------------------------------------------------------------
+    */
+
+    function chargerChapitre()
+    {
+
+        if (!chapitreId) {
+
+            document.getElementById(
+                'chapitreNom'
+            ).textContent =
+                '❌ Aucun chapitre sélectionné.';
+
+            return;
+
+        }
+
+
+        const transaction =
+            db.transaction(
+                'chapitres',
+                'readonly'
+            );
+
+
+        const store =
+            transaction.objectStore(
+                'chapitres'
+            );
+
+
+        const chapitreRequest =
+            store.get(
+                Number(chapitreId)
+            );
+
+
+        chapitreRequest.onsuccess =
+            function () {
+
+                const chapitre =
+                    chapitreRequest.result;
+
+
+                if (!chapitre) {
+
+                    document.getElementById(
+                        'chapitreNom'
+                    ).textContent =
+                        '❌ Chapitre introuvable.';
+
+                    return;
+
+                }
+
+
+                document.getElementById(
+                    'chapitreNom'
+                ).textContent =
+                    '📖 ' + chapitre.chapitre;
+
+
+                console.log(
+                    "📖 Chapitre chargé :",
+                    chapitre
+                );
+
+            };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMULAIRE
+    |--------------------------------------------------------------------------
+    */
+
+    const formNote =
+        document.getElementById(
+            'formNote'
+        );
+
+
+    if (!formNote) {
+
+        console.error(
+            "❌ Le formulaire #formNote est introuvable."
+        );
+
+        return;
+
+    }
+
+
+    formNote.addEventListener(
+        'submit',
+        function (event) {
+
+            event.preventDefault();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Récupérer les champs
+            |--------------------------------------------------------------------------
+            */
+
+            const recto =
+                document.getElementById(
+                    'recto'
+                ).value.trim();
+
+
+            const verso =
+                document.getElementById(
+                    'verso'
+                ).value.trim();
+
+
+            const message =
+                document.getElementById(
+                    'message'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Vérification
+            |--------------------------------------------------------------------------
+            */
+
+            if (!chapitreId) {
+
+                message.textContent =
+                    "❌ Aucun chapitre sélectionné.";
+
+                return;
+
+            }
+
+
+            if (!recto || !verso) {
+
+                message.textContent =
+                    "❌ Veuillez remplir le recto et le verso.";
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Créer la note
+            |--------------------------------------------------------------------------
+            */
+
+            const note = {
+
+                local_id:
+                    crypto.randomUUID(),
+
+                chapitre_id:
+                    Number(chapitreId),
+
+                recto:
+                    recto,
+
+                verso:
+                    verso,
+
+                nombre_revision:
+                    0,
+
+                prochaine_revision:
+                    new Date()
+                        .toISOString()
+                        .split("T")[0],
+
+                is_revised:
+                    true,
+
+                is_synced:
+                    false,
+
+                created_at:
+                    new Date().toISOString()
+
+            };
+
+
+            console.log(
+                "📝 Nouvelle note :",
+                note
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Vérifier IndexedDB
+            |--------------------------------------------------------------------------
+            */
+
+            if (!db) {
+
+                message.textContent =
+                    "❌ IndexedDB n'est pas encore prête.";
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Enregistrer
+            |--------------------------------------------------------------------------
+            */
+
+            const transaction =
+                db.transaction(
+                    'notes',
+                    'readwrite'
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    'notes'
+                );
+
+
+            const addRequest =
+                store.add(note);
+
+
+            addRequest.onsuccess =
+                function () {
+
+                    console.log(
+                        "✅ Note enregistrée dans IndexedDB"
+                    );
+
+
+                    message.textContent =
+                        "✅ Note enregistrée hors connexion.";
+
+
+                    formNote.reset();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Retour aux notes
+                    |--------------------------------------------------------------------------
+                    */
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                '/offlineView/notes.html?id=' +
+                                chapitreId;
+
+                        },
+                        500
+                    );
+
+                };
+
+
+            addRequest.onerror =
+                function (event) {
+
+                    console.error(
+                        "❌ Erreur enregistrement :",
+                        event.target.error
+                    );
+
+
+                    message.textContent =
+                        "❌ Impossible d'enregistrer la note.";
+
+                };
+
+        }
+    );
+
+});
+
+</script>
+
+
+</body>
+
+</html>

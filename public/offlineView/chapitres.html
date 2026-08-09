@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NafarBox - Chapitres</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #F8F3EB;
+            color: #654321;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #nom-matiere {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+        }
+
+        #chapitres {
+            display: grid;
+            gap: 15px;
+        }
+
+        .chapitre {
+            display: block;
+            padding: 20px;
+            background: white;
+            border: 1px solid #D2B48C;
+            border-radius: 10px;
+            color: #654321;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chapitre:hover {
+            background: #F8F3EB;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .retour {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #654321;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <a href="/offlineView/index.html"
+       class="retour">
+
+        ← Retour aux matières
+
+    </a>
+
+
+    <h1>📖 Chapitres</h1>
+
+    <div id="nom-matiere"></div>
+
+    <div id="chapitres"></div>
+
+    <div id="message">
+        Chargement...
+    </div>
+
+
+    <script>
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Récupérer l'ID de la matière dans l'URL
+        |--------------------------------------------------------------------------
+        */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const matiereId =
+            params.get('id');
+
+
+        console.log(
+            "📚 ID matière :",
+            matiereId
+        );
+
+
+        if (!matiereId) {
+
+            document.getElementById('message').textContent =
+                "Matière introuvable.";
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ouvrir IndexedDB
+        |--------------------------------------------------------------------------
+        */
+
+        const request =
+            indexedDB.open("nafarbox", 3);
+
+
+        request.onsuccess = function (event) {
+
+            const db =
+                event.target.result;
+
+            console.log(
+                "✅ IndexedDB ouverte"
+            );
+
+
+            chargerMatiereEtChapitres(db);
+
+        };
+
+
+        request.onerror = function (event) {
+
+            console.error(
+                "❌ Erreur IndexedDB :",
+                event.target.error
+            );
+
+        };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Charger la matière + ses chapitres
+        |--------------------------------------------------------------------------
+        */
+
+        function chargerMatiereEtChapitres(db)
+        {
+
+            const transaction =
+                db.transaction(
+                    [
+                        "matieres",
+                        "chapitres"
+                    ],
+                    "readonly"
+                );
+
+
+            const matieresStore =
+                transaction.objectStore(
+                    "matieres"
+                );
+
+
+            const chapitresStore =
+                transaction.objectStore(
+                    "chapitres"
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Récupérer la matière
+            |--------------------------------------------------------------------------
+            */
+
+            const matiereRequest =
+                matieresStore.get(
+                    Number(matiereId)
+                );
+
+
+            matiereRequest.onsuccess =
+                function ()
+                {
+
+                    const matiere =
+                        matiereRequest.result;
+
+
+                    if (!matiere) {
+
+                        document.getElementById(
+                            'message'
+                        ).textContent =
+                            "Matière introuvable.";
+
+                        return;
+
+                    }
+
+
+                    document.getElementById(
+                        'nom-matiere'
+                    ).textContent =
+                        matiere.matiere;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Récupérer les chapitres
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const index =
+                        chapitresStore.index(
+                            "matiere_id"
+                        );
+
+
+                    const chapitreRequest =
+                        index.getAll(
+                            Number(matiereId)
+                        );
+
+
+                    chapitreRequest.onsuccess =
+                        function ()
+                        {
+
+                            const chapitres =
+                                chapitreRequest.result;
+
+
+                            console.log(
+                                "📖 Chapitres trouvés :",
+                                chapitres
+                            );
+
+
+                            afficherChapitres(
+                                chapitres
+                            );
+
+                        };
+
+                };
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Afficher les chapitres
+        |--------------------------------------------------------------------------
+        */
+
+        function afficherChapitres(chapitres)
+        {
+
+            const container =
+                document.getElementById(
+                    'chapitres'
+                );
+
+
+            const message =
+                document.getElementById(
+                    'message'
+                );
+
+
+            container.innerHTML = "";
+
+
+            if (chapitres.length === 0) {
+
+                message.textContent =
+                    "Aucun chapitre disponible hors connexion.";
+
+                return;
+
+            }
+
+
+            message.textContent =
+                chapitres.length +
+                " chapitre(s) disponible(s).";
+
+
+            chapitres.forEach(
+                function (chapitre)
+                {
+
+                    const lien =
+                        document.createElement('a');
+
+
+                    lien.className =
+                        "chapitre";
+
+
+                    lien.textContent =
+                        "📖 " +
+                        chapitre.chapitre;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ID du chapitre
+                    |--------------------------------------------------------------------------
+                    */
+
+                    lien.dataset.id =
+                        chapitre.id;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Prochaine page
+                    |--------------------------------------------------------------------------
+                    |
+                    | Nous la créerons après.
+                    |
+                    */
+
+              lien.href =
+    "/offlineView/notes.html?id=" +
+    chapitre.id;
+
+
+                    container.appendChild(
+                        lien
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

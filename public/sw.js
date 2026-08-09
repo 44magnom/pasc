@@ -1,87 +1,168 @@
 "use strict";
 
-const CACHE_NAME = "offline-cache-v4";
+const CACHE_NAME = "offline-cache-v7";
+
 const OFFLINE_URL = "/offline.html";
 
 const FILES_TO_CACHE = [
-    OFFLINE_URL
+    "/offlineView/index.html",
+    "/offlineView/chapitres.html",
+    "/offlineView/notes.html",
+    "/offlineView/creer-note.html",
+    "/offline.html"
 ];
 
-self.addEventListener("install", (event) => {
+
+/*
+|--------------------------------------------------------------------------
+| INSTALL
+|--------------------------------------------------------------------------
+*/
+
+self.addEventListener("install", function (event) {
 
     event.waitUntil(
+
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(FILES_TO_CACHE))
-            .then(() => self.skipWaiting())
+
+            .then(function (cache) {
+
+                console.log(
+                    "📦 Mise en cache des pages offline..."
+                );
+
+                return cache.addAll(
+                    FILES_TO_CACHE
+                );
+
+            })
+
     );
 
 });
 
-self.addEventListener("activate", (event) => {
+
+/*
+|--------------------------------------------------------------------------
+| ACTIVATE
+|--------------------------------------------------------------------------
+*/
+
+self.addEventListener("activate", function (event) {
 
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+
+        caches.keys().then(function (cacheNames) {
 
             return Promise.all(
-                cacheNames.map(cacheName => {
+
+                cacheNames.map(function (cacheName) {
 
                     if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
+
+                        console.log(
+                            "🗑️ Suppression ancien cache :",
+                            cacheName
+                        );
+
+                        return caches.delete(
+                            cacheName
+                        );
+
                     }
 
                 })
+
             );
 
-        }).then(() => self.clients.claim())
+        })
+
     );
 
 });
 
-self.addEventListener("fetch", (event) => {
 
-    // Ne pas intercepter les API
-    if (event.request.url.includes("/api/")) {
+/*
+|--------------------------------------------------------------------------
+| FETCH
+|--------------------------------------------------------------------------
+*/
+
+self.addEventListener("fetch", function (event) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pages HTML
+    |--------------------------------------------------------------------------
+    */
+
+    if (event.request.mode === "navigate") {
+
+        event.respondWith(
+
+            fetch(event.request)
+
+                .catch(function () {
+
+                    console.log(
+                        "📴 Hors connexion :",
+                        event.request.url
+                    );
+
+
+                    /*
+                    | Si l'utilisateur demande directement
+                    | offlineView/index.html
+                    */
+
+                    if (
+                        event.request.url.includes(
+                            "/offlineView/"
+                        )
+                    ) {
+
+                        return caches.match(
+                            event.request
+                        );
+
+                    }
+
+
+                    /*
+                    | Sinon, afficher notre page offline
+                    */
+
+                    return caches.match(
+                        OFFLINE_URL
+                    );
+
+                })
+
+        );
+
         return;
+
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CSS / JS / autres fichiers
+    |--------------------------------------------------------------------------
+    */
 
     event.respondWith(
 
-        fetch(event.request)
-            .then(response => {
+        caches.match(
+            event.request
+        )
 
-                // Mettre en cache les pages GET réussies
-                if (
-                    event.request.method === "GET" &&
-                    response.status === 200
-                ) {
+        .then(function (response) {
 
-                    const clone = response.clone();
+            return response ||
+                   fetch(event.request);
 
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, clone);
-                    });
-
-                }
-
-                return response;
-
-            })
-            .catch(() => {
-
-                return caches.match(event.request)
-                    .then(cachedResponse => {
-
-                        if (cachedResponse) {
-                            return cachedResponse;
-                        }
-
-                        if (event.request.mode === "navigate") {
-                            return caches.match(OFFLINE_URL);
-                        }
-
-                    });
-
-            })
+        })
 
     );
 

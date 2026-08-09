@@ -15,6 +15,7 @@ use App\Http\Controllers\ForfaitController;
 use App\Http\Controllers\Abonnement\AbonnementController;
 use App\Http\Controllers\Paiement\PaydunyaController;
 use App\Http\Controllers\Paiement\ReponseController;
+use App\Http\Controllers\OfflineController;
 
 
 
@@ -116,4 +117,16 @@ Route::get('/admin/abonnement-manuel', [AbonnementController::class, 'create2'])
 
 Route::get('/admin/abonnement-manuel', [AbonnementController::class, 'create'])
     ->name('abonnement.manuel');
+    Route::middleware('auth')->get('/offline/notes', [
+    OfflineController::class,
+    'notes'
+]);
+Route::middleware('auth')->get('/api/offline/notes', [
+    OfflineController::class,
+    'notes'
+]);
+Route::middleware('auth')->get('/api/offline/sync', [
+    OfflineController::class,
+    'sync'
+]);
 require __DIR__.'/auth.php';

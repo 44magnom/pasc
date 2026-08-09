@@ -126,4 +126,19 @@ public function store(Request $request)
         'matieres' => $matieres,
     ]);
 }
+
+public function notes()
+{
+    // premet de recupérer toutes les notes de l utilisateur depuis le serveur
+    $notes = Note::whereHas('chapitre.matiere', function ($query) {
+        $query->where('user_id', auth()->id());
+    })
+    ->with('chapitre.matiere')
+    ->get();
+
+    return response()->json([
+        'success' => true,
+        'notes' => $notes,
+    ]);
+}
 }
