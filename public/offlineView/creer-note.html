@@ -98,6 +98,23 @@
 
 <div class="container">
 
+<div id="breadcrumb"></div>
+
+<script>
+
+fetch("/offlineView/breadcrumb.html")
+    .then(response => response.text())
+    .then(html => {
+
+        document.getElementById(
+            "breadcrumb"
+        ).innerHTML = html;
+
+        initialiserBreadcrumb();
+
+    });
+
+</script>
 
     <a href="#"
        id="btnRetour"

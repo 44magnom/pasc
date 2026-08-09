@@ -1,313 +1,818 @@
-<!DOCTYPE html>
-<html lang="fr">
+<meta charset="UTF-8">
 
-<head>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <meta charset="UTF-8">
+<title>NafarBox - Notes</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<style>
 
-    <title>NafarBox - Notes</title>
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background: #F8F3EB;
+        color: #654321;
+    }
 
-    <style>
+    /* En-tête matière + chapitre */
 
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: #F8F3EB;
-            color: #654321;
-        }
+    .entete {
+        text-align: center;
+        margin-bottom: 25px;
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    .matiere {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 
-        #notes {
-            display: grid;
-            gap: 15px;
-        }
+    .chapitre {
+        font-size: 18px;
+        color: #8B6B45;
+    }
 
-        .note {
-            display: block;
-            padding: 20px;
-            background: white;
-            border: 1px solid #D2B48C;
-            border-radius: 10px;
-            color: #654321;
-            text-decoration: none;
-        }
+    #notes {
+        display: grid;
+        gap: 15px;
+    }
 
-        .note-recto {
-            font-weight: bold;
-            font-size: 18px;
-        }
+    .note {
+        display: block;
+        padding: 20px;
+        background: white;
+        border: 1px solid #D2B48C;
+        border-radius: 10px;
+        color: #654321;
+        text-decoration: none;
+    }
 
-        .note-verso {
-            margin-top: 10px;
-        }
+    .note-recto {
+        font-weight: bold;
+        font-size: 18px;
+    }
 
-        .retour {
-            display: inline-block;
-            margin-bottom: 25px;
-            color: #654321;
-            text-decoration: none;
-        }
+    .note-verso {
+        margin-top: 10px;
+    }
 
-        #message {
-            text-align: center;
-            margin-top: 20px;
-        }
+    .retour {
+        display: inline-block;
+        margin-bottom: 25px;
+        color: #654321;
+        text-decoration: none;
+    }
 
-    </style>
+    #message {
+        text-align: center;
+        margin-top: 20px;
+    }
 
-</head>
+    .ajouter {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        background: #654321;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+    }
 
-<body>
+</style>
+<div id="breadcrumb"></div>
 
-    <a href="javascript:history.back()"
-       class="retour">
 
-        ← Retour
 
-    </a>
-<a href="#"
-   id="btnCreerNote"
-   class="btn"
-   style="
-       background-color:#F8F3EB;
-       color:#654321;
-       border:1px solid #D2B48C;
-   ">
-    ➕ Ajouter une note
+<a href="javascript:history.back()"
+   class="retour">
+
+    ← Retour
+
 </a>
-    <h1>📝 Notes</h1>
 
-    <div id="notes"></div>
 
-    <div id="message">
-        Chargement...
+<!-- ========================================================= -->
+<!-- EN-TÊTE -->
+<!-- ========================================================= -->
+
+<div class="entete">
+
+    <div
+        id="nomMatiere"
+        class="matiere">
+
+        📚 Chargement...
+
     </div>
 
+    <div
+        id="nomChapitre"
+        class="chapitre">
 
-    <script>
+        📖 Chargement...
 
-        /*
-        |--------------------------------------------------------------------------
-        | Récupérer le chapitre dans l'URL
-        |--------------------------------------------------------------------------
-        */
+    </div>
 
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-        const chapitreId =
-            params.get('id');
+</div>
 
 
-        console.log(
-            "📖 ID chapitre :",
-            chapitreId
+<!-- ========================================================= -->
+<!-- AJOUTER UNE NOTE -->
+<!-- ========================================================= -->
+
+<a
+    id="btnAjouterNote"
+    href="#"
+    class="ajouter">
+
+    ➕ Ajouter une note
+
+</a>
+
+
+<h2>
+    📝 Notes
+</h2>
+
+
+<div id="notes"></div>
+
+
+<div id="message">
+    Chargement...
+</div>
+
+
+<script>
+
+    /*
+    |--------------------------------------------------------------------------
+    | Récupérer le chapitre dans l'URL
+    |--------------------------------------------------------------------------
+    */
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const chapitreId =
+        params.get('id');
+
+
+    console.log(
+        "📖 ID chapitre :",
+        chapitreId
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vérifier l'ID
+    |--------------------------------------------------------------------------
+    */
+
+    if (!chapitreId) {
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "❌ Aucun chapitre sélectionné.";
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lien Ajouter une note
+    |--------------------------------------------------------------------------
+    */
+
+    document.getElementById(
+        "btnAjouterNote"
+    ).href =
+        "/offlineView/creer-note.html?id=" +
+        chapitreId;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ouvrir IndexedDB
+    |--------------------------------------------------------------------------
+    */
+
+    const request =
+        indexedDB.open(
+            "nafarbox",
+            4
         );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ouvrir IndexedDB
-        |--------------------------------------------------------------------------
-        */
-
-        const request =
-            indexedDB.open("nafarbox", 4);
-
-
-        request.onsuccess = function (event) {
+    request.onsuccess =
+        function (event) {
 
             const db =
                 event.target.result;
+
 
             console.log(
                 "✅ IndexedDB ouverte"
             );
 
-            chargerNotes(db);
+
+            /*
+            | Charger le chapitre
+            */
+
+            chargerChapitre(
+                db
+            );
+
+
+            /*
+            | Charger les notes
+            */
+
+            chargerNotes(
+                db
+            );
 
         };
 
 
-        request.onerror = function (event) {
+    request.onerror =
+        function (event) {
 
             console.error(
                 "❌ Erreur IndexedDB :",
                 event.target.error
             );
 
+            document.getElementById(
+                "message"
+            ).textContent =
+                "❌ Impossible d'ouvrir la base locale.";
+
         };
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Charger les notes du chapitre
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Charger le chapitre
+    |--------------------------------------------------------------------------
+    */
 
-        function chargerNotes(db)
-        {
+    function chargerChapitre(db)
+    {
+
+        const transaction =
+            db.transaction(
+                "chapitres",
+                "readonly"
+            );
+
+
+        const store =
+            transaction.objectStore(
+                "chapitres"
+            );
+
+
+        const request =
+            store.get(
+                Number(chapitreId)
+            );
+
+
+        request.onsuccess =
+            function ()
+            {
+
+                const chapitre =
+                    request.result;
+
+
+                if (!chapitre) {
+
+                    console.error(
+                        "❌ Chapitre introuvable :",
+                        chapitreId
+                    );
+
+                    document.getElementById(
+                        "nomChapitre"
+                    ).textContent =
+                        "📖 Chapitre introuvable";
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "📖 Chapitre trouvé :",
+                    chapitre
+                );
+
+
+                /*
+                | Afficher le nom du chapitre
+                */
+
+                document.getElementById(
+                    "nomChapitre"
+                ).textContent =
+                    "📖 " + chapitre.chapitre;
+
+
+                /*
+                | Charger maintenant la matière
+                */
+
+                chargerMatiere(
+                    db,
+                    chapitre.matiere_id
+                );
+
+            };
+
+
+        request.onerror =
+            function (event)
+            {
+
+                console.error(
+                    "❌ Erreur lecture chapitre :",
+                    event.target.error
+                );
+
+            };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Charger la matière
+    |--------------------------------------------------------------------------
+    */
+
+    function chargerMatiere(
+        db,
+        matiereId
+    )
+    {
+
+        const transaction =
+            db.transaction(
+                "matieres",
+                "readonly"
+            );
+
+
+        const store =
+            transaction.objectStore(
+                "matieres"
+            );
+
+
+        const request =
+            store.get(
+                Number(matiereId)
+            );
+
+
+        request.onsuccess =
+            function ()
+            {
+
+                const matiere =
+                    request.result;
+
+
+                if (!matiere) {
+
+                    console.error(
+                        "❌ Matière introuvable :",
+                        matiereId
+                    );
+
+                    document.getElementById(
+                        "nomMatiere"
+                    ).textContent =
+                        "📚 Matière introuvable";
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "📚 Matière trouvée :",
+                    matiere
+                );
+
+
+                document.getElementById(
+                    "nomMatiere"
+                ).textContent =
+                    "📚 " + matiere.matiere;
+
+            };
+
+
+        request.onerror =
+            function (event)
+            {
+
+                console.error(
+                    "❌ Erreur lecture matière :",
+                    event.target.error
+                );
+
+            };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Charger les notes du chapitre
+    |--------------------------------------------------------------------------
+    */
+
+    function chargerNotes(db)
+    {
+
+        const transaction =
+            db.transaction(
+                "notes",
+                "readonly"
+            );
+
+
+        const store =
+            transaction.objectStore(
+                "notes"
+            );
+
+
+        const index =
+            store.index(
+                "chapitre_id"
+            );
+
+
+        const request =
+            index.getAll(
+                Number(chapitreId)
+            );
+
+
+        request.onsuccess =
+            function ()
+            {
+
+                const notes =
+                    request.result;
+
+
+                console.log(
+                    "📝 Notes trouvées :",
+                    notes
+                );
+
+
+                afficherNotes(
+                    notes
+                );
+
+            };
+
+
+        request.onerror =
+            function (event)
+            {
+
+                console.error(
+                    "❌ Erreur lecture notes :",
+                    event.target.error
+                );
+
+            };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Afficher les notes
+    |--------------------------------------------------------------------------
+    */
+
+    function afficherNotes(notes)
+    {
+
+        const container =
+            document.getElementById(
+                "notes"
+            );
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        container.innerHTML = "";
+
+
+        if (notes.length === 0) {
+
+            message.textContent =
+                "Aucune note disponible hors connexion.";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            notes.length +
+            " note(s) disponible(s).";
+
+
+        notes.forEach(
+            function (note)
+            {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "note";
+
+
+                div.innerHTML = `
+
+                    <div class="note-recto">
+                        ${note.recto}
+                    </div>
+
+                    <div class="note-verso">
+                        ${note.verso}
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    div
+                );
+
+            }
+        );
+
+    }
+
+</script>
+<script>
+
+fetch("/offlineView/breadcrumb.html")
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error(
+                "Erreur HTTP : " + response.status
+            );
+        }
+
+        return response.text();
+
+    })
+    .then(html => {
+
+        document.getElementById(
+            "breadcrumb"
+        ).innerHTML = html;
+
+        chargerBreadcrumb();
+
+    })
+    .catch(error => {
+
+        console.error(
+            "❌ Erreur breadcrumb :",
+            error
+        );
+
+    });
+
+
+function chargerBreadcrumb() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const chapitreId =
+        params.get("id");
+
+
+    if (!chapitreId) {
+
+        console.error(
+            "❌ ID chapitre absent"
+        );
+
+        return;
+    }
+
+
+    const request =
+        indexedDB.open(
+            "nafarbox",
+            4
+        );
+
+
+    request.onsuccess =
+        function(event) {
+
+            const db =
+                event.target.result;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Récupérer le chapitre
+            |--------------------------------------------------------------------------
+            */
 
             const transaction =
                 db.transaction(
-                    "notes",
+                    "chapitres",
                     "readonly"
                 );
 
 
             const store =
                 transaction.objectStore(
-                    "notes"
+                    "chapitres"
                 );
 
 
-            const index =
-                store.index(
-                    "chapitre_id"
-                );
-
-
-            const request =
-                index.getAll(
+            const chapitreRequest =
+                store.get(
                     Number(chapitreId)
                 );
 
 
-            request.onsuccess =
-                function ()
-                {
+            chapitreRequest.onsuccess =
+                function() {
 
-                    const notes =
-                        request.result;
+                    const chapitre =
+                        chapitreRequest.result;
+
+
+                    if (!chapitre) {
+
+                        console.error(
+                            "❌ Chapitre introuvable"
+                        );
+
+                        return;
+                    }
 
 
                     console.log(
-                        "📝 Notes trouvées :",
-                        notes
+                        "📖 Chapitre :",
+                        chapitre
                     );
 
 
-                    afficherNotes(notes);
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Nom du chapitre
+                    |--------------------------------------------------------------------------
+                    */
 
-                };
+                    document.getElementById(
+                        "breadcrumbChapitre"
+                    ).textContent =
+                        "📖 " + chapitre.chapitre;
 
 
-            request.onerror =
-                function (event)
-                {
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Lien vers le chapitre
+                    |--------------------------------------------------------------------------
+                    */
 
-                    console.error(
-                        "❌ Erreur lecture notes :",
-                        event.target.error
+                    document.getElementById(
+                        "breadcrumbChapitre"
+                    ).href =
+                        "/offlineView/notes.html?id=" +
+                        chapitre.id;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Récupérer la matière
+                    |--------------------------------------------------------------------------
+                    */
+
+                    chargerBreadcrumbMatiere(
+                        db,
+                        chapitre.matiere_id
                     );
 
                 };
 
-        }
+        };
+
+}
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Afficher les notes
-        |--------------------------------------------------------------------------
-        */
+function chargerBreadcrumbMatiere(
+    db,
+    matiereId
+) {
 
-        function afficherNotes(notes)
-        {
+    const transaction =
+        db.transaction(
+            "matieres",
+            "readonly"
+        );
 
-            const container =
-                document.getElementById(
-                    'notes'
+
+    const store =
+        transaction.objectStore(
+            "matieres"
+        );
+
+
+    const request =
+        store.get(
+            Number(matiereId)
+        );
+
+
+    request.onsuccess =
+        function() {
+
+            const matiere =
+                request.result;
+
+
+            if (!matiere) {
+
+                console.error(
+                    "❌ Matière introuvable"
                 );
-
-
-            const message =
-                document.getElementById(
-                    'message'
-                );
-
-
-            container.innerHTML = "";
-
-
-            if (notes.length === 0) {
-
-                message.textContent =
-                    "Aucune note disponible hors connexion.";
 
                 return;
-
             }
 
 
-            message.textContent =
-                notes.length +
-                " note(s) disponible(s).";
-
-
-            notes.forEach(
-                function (note)
-                {
-
-                    const div =
-                        document.createElement(
-                            'div'
-                        );
-
-
-                    div.className =
-                        "note";
-
-
-                    div.innerHTML = `
-
-                        <div class="note-recto">
-                            ${note.recto}
-                        </div>
-
-                        <div class="note-verso">
-                            ${note.verso}
-                        </div>
-
-                    `;
-
-
-                    container.appendChild(
-                        div
-                    );
-
-                }
+            console.log(
+                "📚 Matière :",
+                matiere
             );
 
-        }
 
-    </script>
-    
-<script>
+            /*
+            |--------------------------------------------------------------------------
+            | Nom réel de la matière
+            |--------------------------------------------------------------------------
+            */
 
-    const btnCreerNote =
-        document.getElementById('btnCreerNote');
+            document.getElementById(
+                "breadcrumbMatiere"
+            ).textContent =
+                "📚 " + matiere.matiere;
 
 
-    if (chapitreId) {
+            /*
+            |--------------------------------------------------------------------------
+            | Lien vers les chapitres de la matière
+            |--------------------------------------------------------------------------
+            */
 
-        btnCreerNote.href =
-            '/offlineView/creer-note.html?id=' +
-            chapitreId;
+            document.getElementById(
+                "breadcrumbMatiere"
+            ).href =
+                "/offlineView/chapitres.html?id=" +
+                matiere.id;
 
-    }
+        };
+
+}
 
 </script>
-</body>
-
-</html>

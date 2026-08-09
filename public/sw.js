@@ -21,6 +21,7 @@ const FILES_TO_CACHE = [
     "/offlineView/notes.html",
 
     "/offlineView/creer-note.html",
+    "/offlineView/breadcrumb.html",
 
     "/offline.html"
 

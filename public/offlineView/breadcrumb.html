@@ -1,0 +1,60 @@
+<nav class="breadcrumb-offline">
+
+    <a href="/offlineView/index.html">
+        🏠 Accueil
+    </a>
+
+    <span>›</span>
+
+    <a id="breadcrumbMatiere"
+       href="#">
+        📚 Matière
+    </a>
+
+    <span>›</span>
+
+    <a id="breadcrumbChapitre"
+       href="#">
+        📖 Chapitre
+    </a>
+
+    <span id="breadcrumbCurrentContainer">
+        ›
+        <span id="breadcrumbCurrent">
+            Page
+        </span>
+    </span>
+
+</nav>
+
+<style>
+    .breadcrumb-offline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 20px;
+    padding: 12px 15px;
+
+    background: #F8F3EB;
+    border: 1px solid #D2B48C;
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.breadcrumb-offline a {
+    color: #654321;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.breadcrumb-offline a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-offline span {
+    color: #8B6B45;
+}
+</style>

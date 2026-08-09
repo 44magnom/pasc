@@ -56,6 +56,9 @@
 </head>
 
 <body>
+    <div id="breadcrumb"></div>
+
+
 
     <h1>📚 Mes matières</h1>
 
@@ -238,7 +241,21 @@
         }
 
     </script>
+<script>
 
+fetch("/offlineView/breadcrumb.html")
+    .then(response => response.text())
+    .then(html => {
+
+        document.getElementById(
+            "breadcrumb"
+        ).innerHTML = html;
+
+        initialiserBreadcrumb();
+
+    });
+
+</script>
 </body>
 
 </html>
