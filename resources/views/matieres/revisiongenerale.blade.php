@@ -114,7 +114,7 @@
             white-space: pre-wrap; 
             font-family: 'Poppins', sans-serif; 
             font-size: 18px; 
-                font-weight:200;
+                font-weight:300;
             color: #555555;">
         {!! $notes->first()?->verso ?? '' !!}
     </div>
