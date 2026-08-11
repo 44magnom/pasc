@@ -109,8 +109,13 @@
 
     <hr>
 
-    <div id="reponseCarte"
-         style="display:none; white-space: pre-wrap; ">
+<div id="reponseCarte"
+     style="display:none; 
+            white-space: pre-wrap; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 18px; 
+                font-weight:200;
+            color: #555555;">
         {!! $notes->first()?->verso ?? '' !!}
     </div>
 
