@@ -22,8 +22,9 @@ const FILES_TO_CACHE = [
 
     "/offlineView/creer-note.html",
     "/offlineView/breadcrumb.html",
-    //   '/offlineView/ckeditor/ckeditor.js',
-    //      '/offlineView/partials/brouillon-note.js',
+      '/offlineView/ckeditor/ckeditor.js',
+         '/offlineView/partials/brouillon-note.js',
+         '/offlineView/partials/liste-brouillons.js',
 
     "/offline.html"
 
