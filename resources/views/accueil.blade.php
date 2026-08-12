@@ -77,6 +77,16 @@
 </style>
 
 <div class="container py-5">
+    <div class="container mt-4">
+
+        {{-- Liste des brouillons --}}
+        @include('partials.liste-brouillons')
+
+
+        {{-- Contenu de la page --}}
+        @yield('content')
+
+    </div>
 
     {{-- Bienvenue --}}
     <div class="welcome-card p-4 mb-5">

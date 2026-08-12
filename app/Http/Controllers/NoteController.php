@@ -63,47 +63,94 @@ public function store(Request $request)
 {
     $user = Auth::user();
 
-    $chapitre = Chapitre::whereHas('matiere', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->findOrFail($request->chapitre_id);
+    /*
+    |--------------------------------------------------------------------------
+    | Vérifier le chapitre
+    |--------------------------------------------------------------------------
+    */
 
-    // Limite de 5 notes par chapitre pour les utilisateurs non abonnés
-    if (!$user->is_subscribed && $chapitre->notes()->count() >= 5) {
+    $chapitre = Chapitre::whereHas('matiere', function ($query) use ($user) {
+
+        $query->where('user_id', $user->id);
+
+    })->findOrFail($request->chapitre_id);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation
+    |--------------------------------------------------------------------------
+    */
+
+    $request->validate([
+        'recto'       => 'required|string',
+        'verso'       => 'nullable|string',
+        'matiere_id'  => 'required',
+        'chapitre_id' => 'required',
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Limite gratuite
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !$user->is_subscribed &&
+        $chapitre->notes()->count() >= 5
+    ) {
+
         return redirect()
             ->back()
             ->withInput()
             ->with(
                 'error',
-                'Limite atteinte: La version gratuite est limitée à 5 notes par chapitre. Passez à la version Premium pour créer davantage de notes.'
+                'Limite atteinte : la version gratuite est limitée à 5 notes par chapitre. Passez à la version Premium pour créer davantage de notes.'
             );
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Créer la note
+    |--------------------------------------------------------------------------
+    */
+
     Note::create([
-        'chapitre_id'         => $chapitre->id,
-        'recto'               => $request->recto,
-        'verso'               => $request->verso,
-        'nombre_revision'     => 0,
-        'prochaine_revision'  => today(),
+
+        'chapitre_id' =>
+            $chapitre->id,
+
+        'recto' =>
+            $request->recto,
+
+        'verso' =>
+            $request->verso,
+
+        'nombre_revision' =>
+            0,
+
+        'prochaine_revision' =>
+            today(),
+
     ]);
 
-// La note est créée ici...
 
-$chapitre->refresh(); // Recharge les données du chapitre
-
-if (!$user->is_subscribed && $chapitre->notes()->count() >= 5) {
-    return redirect()
-        ->route('chapitres.show', $chapitre->id)
-        ->with('error', 'Vous avez atteint la limite de 5 notes pour ce chapitre.');
-}
+    /*
+    |--------------------------------------------------------------------------
+    | Succès
+    |--------------------------------------------------------------------------
+    |
+    | On indique au JavaScript que la note a réellement
+    | été créée afin qu'il puisse supprimer le brouillon.
+    |
+    */
 
 return redirect()
     ->back()
-    ->withInput([
-        'matiere_id'  => $request->matiere_id,
-        'chapitre_id' => $request->chapitre_id,
-    ])
-    ->with('success', 'Note ajoutée avec succès.');
+    ->with('success', 'Note ajoutée avec succès.')
+    ->with('note_created', true);
 }
 
     /**

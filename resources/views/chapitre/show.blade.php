@@ -1,7 +1,128 @@
 @extends('app')
 
 @section('content')
+@if(session('note_created'))
 
+    <script>
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function () {
+
+            const chapitreId =
+                {{ session('note_chapitre_id') }};
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Ouvrir IndexedDB
+            |--------------------------------------------------------------------------
+            */
+
+            const request =
+                indexedDB.open(
+                    'nafarbox',
+                    6
+                );
+
+
+            request.onsuccess =
+                function (event) {
+
+                    const db =
+                        event.target.result;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Vérifier le store
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        !db.objectStoreNames.contains(
+                            'brouillons'
+                        )
+                    ) {
+
+                        console.log(
+                            'ℹ️ Store brouillons inexistant'
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Supprimer le brouillon
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const transaction =
+                        db.transaction(
+                            'brouillons',
+                            'readwrite'
+                        );
+
+
+                    const store =
+                        transaction.objectStore(
+                            'brouillons'
+                        );
+
+
+                    const brouillonId =
+                        'brouillon_note_' +
+                        chapitreId;
+
+
+                    store.delete(
+                        brouillonId
+                    );
+
+
+                    transaction.oncomplete =
+                        function () {
+
+                            console.log(
+                                '🗑️ Brouillon supprimé après création de la note :',
+                                brouillonId
+                            );
+
+                        };
+
+
+                    transaction.onerror =
+                        function (event) {
+
+                            console.error(
+                                '❌ Erreur suppression brouillon :',
+                                event.target.error
+                            );
+
+                        };
+
+                };
+
+
+            request.onerror =
+                function (event) {
+
+                    console.error(
+                        '❌ Impossible d’ouvrir IndexedDB :',
+                        event.target.error
+                    );
+
+                };
+
+        }
+    );
+
+    </script>
+
+@endif
 <div class="container mt-4">
     @if(session('error'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -10,6 +131,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 @endif
+    <div class="container mt-4">
+
+        {{-- Liste des brouillons --}}
+        @include('partials.liste-brouillons')
+
+
+        {{-- Contenu de la page --}}
+        @yield('content')
+
+    </div>
 
 <div class="card shadow mb-4"
      style="background-color:#F8F3EB; border:1px solid #D2B48C;">
@@ -175,4 +306,6 @@
     box-shadow:0 4px 12px rgba(101,67,33,.12);
 }
 </style>
+
+
 @endPush

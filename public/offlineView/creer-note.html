@@ -10,82 +10,153 @@
 
     <title>NafarBox - Nouvelle note</title>
 
+
     <style>
 
         body {
+
             margin: 0;
+
             padding: 20px;
+
             font-family: Arial, sans-serif;
+
             background: #F8F3EB;
+
             color: #654321;
+
         }
+
 
         .container {
+
             max-width: 700px;
+
             margin: auto;
+
         }
+
 
         h1 {
+
             text-align: center;
+
             margin-bottom: 10px;
+
         }
+
 
         #chapitreNom {
+
             text-align: center;
+
             margin-bottom: 30px;
+
             font-size: 18px;
+
         }
+
 
         label {
+
             display: block;
+
             margin-bottom: 8px;
+
             font-weight: bold;
+
         }
+
 
         textarea {
+
             width: 100%;
+
             box-sizing: border-box;
+
             padding: 12px;
+
             border: 1px solid #D2B48C;
+
             border-radius: 8px;
+
             font-size: 16px;
+
             resize: vertical;
+
             margin-bottom: 20px;
+
         }
+
 
         #recto {
+
             min-height: 80px;
+
         }
 
-        #verso {
-            min-height: 180px;
+
+        .ck-editor {
+
+            margin-bottom: 20px;
+
         }
+
+
+        .ck-editor__editable_inline {
+
+            min-height: 180px;
+
+        }
+
 
         button {
+
             width: 100%;
+
             padding: 14px;
+
             border: 1px solid #D2B48C;
+
             border-radius: 8px;
+
             background: #654321;
+
             color: white;
+
             font-size: 16px;
+
             cursor: pointer;
+
         }
+
 
         button:hover {
+
             opacity: 0.9;
+
         }
+
 
         .retour {
+
             display: inline-block;
+
             margin-bottom: 25px;
+
             color: #654321;
+
             text-decoration: none;
+
         }
 
+
         #message {
+
             margin-top: 20px;
+
             text-align: center;
+
         }
 
     </style>
@@ -98,23 +169,45 @@
 
 <div class="container">
 
-<div id="breadcrumb"></div>
 
-<script>
+    <div id="breadcrumb"></div>
 
-fetch("/offlineView/breadcrumb.html")
-    .then(response => response.text())
-    .then(html => {
 
-        document.getElementById(
-            "breadcrumb"
-        ).innerHTML = html;
+    <script>
 
-        initialiserBreadcrumb();
+    fetch("/offlineView/breadcrumb.html")
 
-    });
+        .then(response => response.text())
 
-</script>
+        .then(html => {
+
+            document.getElementById(
+                "breadcrumb"
+            ).innerHTML = html;
+
+
+            if (
+                typeof initialiserBreadcrumb ===
+                "function"
+            ) {
+
+                initialiserBreadcrumb();
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "❌ Erreur breadcrumb :",
+                error
+            );
+
+        });
+
+    </script>
+
 
     <a href="#"
        id="btnRetour"
@@ -125,41 +218,57 @@ fetch("/offlineView/breadcrumb.html")
     </a>
 
 
-    <h1>➕ Nouvelle note</h1>
+    <h1>
+        ➕ Nouvelle note
+    </h1>
 
 
     <div id="chapitreNom">
+
         Chargement du chapitre...
+
     </div>
 
 
     <form id="formNote">
 
 
+        <!-- =====================================================
+             RECTO
+        ====================================================== -->
+
         <label for="recto">
+
             Recto
+
         </label>
 
 
         <textarea
             id="recto"
-            placeholder="Écrivez le recto de la note..."
-            required></textarea>
+            placeholder="Écrivez le recto de la note..."></textarea>
 
+
+        <!-- =====================================================
+             VERSO
+        ====================================================== -->
 
         <label for="verso">
+
             Verso
+
         </label>
 
 
         <textarea
             id="verso"
-            placeholder="Écrivez le verso de la note..."
-            required></textarea>
+            placeholder="Écrivez le verso de la note..."></textarea>
 
 
         <button type="submit">
+
             💾 Enregistrer la note
+
         </button>
 
 
@@ -170,343 +279,571 @@ fetch("/offlineView/breadcrumb.html")
 
 
 </div>
+
+
+
+<!-- =============================================================
+     CKEDITOR LOCAL
+============================================================= -->
+
+<script src="/offlineView/ckeditor/ckeditor.js"></script>
+
+
+
+<!-- =============================================================
+     BROUILLON
+============================================================= -->
+
+<script src="/offlineView/partials/brouillon-note.js"></script>
+
+
+
 <script>
 
-document.addEventListener('DOMContentLoaded', function () {
-
-    let db = null;
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHAPITRE DANS L'URL
-    |--------------------------------------------------------------------------
-    */
-
-    const params = new URLSearchParams(
-        window.location.search
-    );
-
-    const chapitreId = params.get('id');
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
 
 
-    console.log(
-        "📖 Chapitre de la nouvelle note :",
-        chapitreId
-    );
+        /*
+        |--------------------------------------------------------------------------
+        | VARIABLES
+        |--------------------------------------------------------------------------
+        */
+
+        let db = null;
+
+        let versoEditor = null;
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | BOUTON RETOUR
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | CHAPITRE
+        |--------------------------------------------------------------------------
+        */
 
-    const btnRetour =
-        document.getElementById('btnRetour');
-
-
-    if (chapitreId && btnRetour) {
-
-        btnRetour.href =
-            '/offlineView/notes.html?id=' +
-            chapitreId;
-
-    }
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | OUVRIR INDEXEDDB
-    |--------------------------------------------------------------------------
-    */
+        const chapitreId =
+            params.get('id');
 
-    const request =
-        indexedDB.open('nafarbox', 4);
-
-
-    request.onsuccess = function (event) {
-
-        db = event.target.result;
 
         console.log(
-            "✅ IndexedDB ouverte"
+            '📖 Chapitre :',
+            chapitreId
         );
 
 
-        chargerChapitre();
+        /*
+        |--------------------------------------------------------------------------
+        | RETOUR
+        |--------------------------------------------------------------------------
+        */
 
-    };
-
-
-    request.onerror = function (event) {
-
-        console.error(
-            "❌ Erreur IndexedDB :",
-            event.target.error
-        );
-
-    };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHARGER LE CHAPITRE
-    |--------------------------------------------------------------------------
-    */
-
-    function chargerChapitre()
-    {
-
-        if (!chapitreId) {
-
+        const btnRetour =
             document.getElementById(
-                'chapitreNom'
-            ).textContent =
-                '❌ Aucun chapitre sélectionné.';
+                'btnRetour'
+            );
+
+
+        if (
+            chapitreId &&
+            btnRetour
+        ) {
+
+            btnRetour.href =
+                '/offlineView/notes.html?id=' +
+                chapitreId;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CKEDITOR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            typeof ClassicEditor ===
+            'undefined'
+        ) {
+
+            console.error(
+                '❌ CKEditor local introuvable'
+            );
 
             return;
 
         }
 
 
-        const transaction =
-            db.transaction(
-                'chapitres',
-                'readonly'
+        ClassicEditor
+            .create(
+                document.querySelector(
+                    '#verso'
+                )
+            )
+            .then(
+                function (editor) {
+
+                    versoEditor =
+                        editor;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Rendre l'éditeur disponible globalement
+                    |--------------------------------------------------------------------------
+                    */
+
+                    window.versoEditor =
+                        editor;
+
+
+                    console.log(
+                        '✅ CKEditor Verso prêt'
+                    );
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Informer le système de brouillon
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        typeof window.initialiserBrouillon ===
+                        'function'
+                    ) {
+
+                        window.initialiserBrouillon();
+
+                    }
+
+                }
+            )
+            .catch(
+                function (error) {
+
+                    console.error(
+                        '❌ Erreur CKEditor :',
+                        error
+                    );
+
+                }
             );
 
 
-        const store =
-            transaction.objectStore(
-                'chapitres'
+        /*
+        |--------------------------------------------------------------------------
+        | INDEXEDDB PRINCIPALE
+        |--------------------------------------------------------------------------
+        */
+
+        const request =
+            indexedDB.open(
+                'nafarbox',
+               7
             );
 
 
-        const chapitreRequest =
-            store.get(
-                Number(chapitreId)
-            );
+        request.onsuccess =
+            function (event) {
+
+                db =
+                    event.target.result;
 
 
-        chapitreRequest.onsuccess =
-            function () {
-
-                const chapitre =
-                    chapitreRequest.result;
+                console.log(
+                    '✅ IndexedDB ouverte'
+                );
 
 
-                if (!chapitre) {
+                chargerChapitre();
+
+            };
+
+
+        request.onerror =
+            function (event) {
+
+                console.error(
+                    '❌ Erreur IndexedDB :',
+                    event.target.error
+                );
+
+            };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHARGER LE CHAPITRE
+        |--------------------------------------------------------------------------
+        */
+
+        function chargerChapitre() {
+
+
+            if (!chapitreId) {
+
+                document.getElementById(
+                    'chapitreNom'
+                ).textContent =
+                    '❌ Aucun chapitre sélectionné.';
+
+                return;
+
+            }
+
+
+            if (
+                !db.objectStoreNames.contains(
+                    'chapitres'
+                )
+            ) {
+
+                console.error(
+                    '❌ Store chapitres introuvable'
+                );
+
+                return;
+
+            }
+
+
+            const transaction =
+                db.transaction(
+                    'chapitres',
+                    'readonly'
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    'chapitres'
+                );
+
+
+            const chapitreRequest =
+                store.get(
+                    Number(chapitreId)
+                );
+
+
+            chapitreRequest.onsuccess =
+                function () {
+
+                    const chapitre =
+                        chapitreRequest.result;
+
+
+                    if (!chapitre) {
+
+                        document.getElementById(
+                            'chapitreNom'
+                        ).textContent =
+                            '❌ Chapitre introuvable.';
+
+                        return;
+
+                    }
+
 
                     document.getElementById(
                         'chapitreNom'
                     ).textContent =
-                        '❌ Chapitre introuvable.';
+                        '📖 ' +
+                        chapitre.chapitre;
+
+                };
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FORMULAIRE
+        |--------------------------------------------------------------------------
+        */
+
+        const formNote =
+            document.getElementById(
+                'formNote'
+            );
+
+
+        formNote.addEventListener(
+            'submit',
+            async function (event) {
+
+                event.preventDefault();
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | RECTO
+                |--------------------------------------------------------------------------
+                */
+
+                const recto =
+                    document
+                        .getElementById(
+                            'recto'
+                        )
+                        .value
+                        .trim();
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VERSO CKEDITOR
+                |--------------------------------------------------------------------------
+                */
+
+                const verso =
+                    versoEditor
+                        ? versoEditor.getData()
+                        : '';
+
+
+                const message =
+                    document.getElementById(
+                        'message'
+                    );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VALIDATION
+                |--------------------------------------------------------------------------
+                */
+
+                if (!chapitreId) {
+
+                    message.textContent =
+                        '❌ Aucun chapitre sélectionné.';
 
                     return;
 
                 }
 
 
-                document.getElementById(
-                    'chapitreNom'
-                ).textContent =
-                    '📖 ' + chapitre.chapitre;
+                if (!recto) {
+
+                    message.textContent =
+                        '❌ Veuillez remplir le recto.';
+
+                    return;
+
+                }
+
+
+                if (!verso.trim()) {
+
+                    message.textContent =
+                        '❌ Veuillez remplir le verso.';
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | INDEXEDDB
+                |--------------------------------------------------------------------------
+                */
+
+                if (!db) {
+
+                    message.textContent =
+                        "❌ La base locale n'est pas encore prête.";
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | CRÉER LA NOTE
+                |--------------------------------------------------------------------------
+                */
+
+                const note = {
+
+                    local_id:
+                        crypto.randomUUID(),
+
+                    chapitre_id:
+                        Number(
+                            chapitreId
+                        ),
+
+                    recto:
+                        recto,
+
+                    verso:
+                        verso,
+
+                    nombre_revision:
+                        0,
+
+                    prochaine_revision:
+                        new Date()
+                            .toISOString()
+                            .split('T')[0],
+
+                    is_revised:
+                        true,
+
+                    is_synced:
+                        false,
+
+                    created_at:
+                        new Date()
+                            .toISOString()
+
+                };
 
 
                 console.log(
-                    "📖 Chapitre chargé :",
-                    chapitre
-                );
-
-            };
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORMULAIRE
-    |--------------------------------------------------------------------------
-    */
-
-    const formNote =
-        document.getElementById(
-            'formNote'
-        );
-
-
-    if (!formNote) {
-
-        console.error(
-            "❌ Le formulaire #formNote est introuvable."
-        );
-
-        return;
-
-    }
-
-
-    formNote.addEventListener(
-        'submit',
-        function (event) {
-
-            event.preventDefault();
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Récupérer les champs
-            |--------------------------------------------------------------------------
-            */
-
-            const recto =
-                document.getElementById(
-                    'recto'
-                ).value.trim();
-
-
-            const verso =
-                document.getElementById(
-                    'verso'
-                ).value.trim();
-
-
-            const message =
-                document.getElementById(
-                    'message'
+                    '📦 Note à enregistrer :',
+                    note
                 );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Vérification
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | ENREGISTRER
+                |--------------------------------------------------------------------------
+                */
 
-            if (!chapitreId) {
+                try {
 
-                message.textContent =
-                    "❌ Aucun chapitre sélectionné.";
-
-                return;
-
-            }
-
-
-            if (!recto || !verso) {
-
-                message.textContent =
-                    "❌ Veuillez remplir le recto et le verso.";
-
-                return;
-
-            }
+                    const transaction =
+                        db.transaction(
+                            'notes',
+                            'readwrite'
+                        );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Créer la note
-            |--------------------------------------------------------------------------
-            */
-
-            const note = {
-
-                local_id:
-                    crypto.randomUUID(),
-
-                chapitre_id:
-                    Number(chapitreId),
-
-                recto:
-                    recto,
-
-                verso:
-                    verso,
-
-                nombre_revision:
-                    0,
-
-                prochaine_revision:
-                    new Date()
-                        .toISOString()
-                        .split("T")[0],
-
-                is_revised:
-                    true,
-
-                is_synced:
-                    false,
-
-                created_at:
-                    new Date().toISOString()
-
-            };
+                    const store =
+                        transaction.objectStore(
+                            'notes'
+                        );
 
 
-            console.log(
-                "📝 Nouvelle note :",
-                note
-            );
+                    const addRequest =
+                        store.add(
+                            note
+                        );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Vérifier IndexedDB
-            |--------------------------------------------------------------------------
-            */
+                    await new Promise(
+                        function (
+                            resolve,
+                            reject
+                        ) {
 
-            if (!db) {
+                            addRequest.onsuccess =
+                                function () {
 
-                message.textContent =
-                    "❌ IndexedDB n'est pas encore prête.";
+                                    resolve();
 
-                return;
-
-            }
+                                };
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Enregistrer
-            |--------------------------------------------------------------------------
-            */
+                            addRequest.onerror =
+                                function (event) {
 
-            const transaction =
-                db.transaction(
-                    'notes',
-                    'readwrite'
-                );
+                                    reject(
+                                        event
+                                            .target
+                                            .error
+                                    );
 
+                                };
 
-            const store =
-                transaction.objectStore(
-                    'notes'
-                );
-
-
-            const addRequest =
-                store.add(note);
-
-
-            addRequest.onsuccess =
-                function () {
-
-                    console.log(
-                        "✅ Note enregistrée dans IndexedDB"
+                        }
                     );
 
 
-                    message.textContent =
-                        "✅ Note enregistrée hors connexion.";
-
-
-                    formNote.reset();
+                    console.log(
+                        '✅ Note enregistrée dans IndexedDB'
+                    );
 
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Retour aux notes
+                    | SUPPRIMER LE BROUILLON
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        typeof window.supprimerBrouillon ===
+                        'function'
+                    ) {
+
+                        await window.supprimerBrouillon();
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | MESSAGE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    message.textContent =
+                        '✅ Note enregistrée hors connexion.';
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | VIDER LE FORMULAIRE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    document
+                        .getElementById(
+                            'recto'
+                        )
+                        .value = '';
+
+
+                    if (versoEditor) {
+
+                        versoEditor.setData('');
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ACTUALISER LA LISTE DES BROUILLONS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        typeof window.actualiserListeBrouillons ===
+                        'function'
+                    ) {
+
+                        window.actualiserListeBrouillons();
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RETOUR
                     |--------------------------------------------------------------------------
                     */
 
@@ -521,27 +858,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         500
                     );
 
-                };
 
-
-            addRequest.onerror =
-                function (event) {
+                } catch (error) {
 
                     console.error(
-                        "❌ Erreur enregistrement :",
-                        event.target.error
+                        '❌ Erreur enregistrement note :',
+                        error
                     );
 
 
                     message.textContent =
                         "❌ Impossible d'enregistrer la note.";
 
-                };
+                }
 
-        }
-    );
+            }
+        );
 
-});
+    });
 
 </script>
 

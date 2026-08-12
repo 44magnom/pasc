@@ -203,6 +203,16 @@ body{
 
     </div>
 @endif
+    <div class="container mt-4">
+
+        {{-- Liste des brouillons --}}
+        @include('partials.liste-brouillons')
+
+
+        {{-- Contenu de la page --}}
+        @yield('content')
+
+    </div>
 
 <div class="hero">
 

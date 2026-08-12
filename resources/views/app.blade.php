@@ -14,7 +14,10 @@
 
      @include('front.navbar')
          @include('front.breadcrumb')
+      
 
+
+         
     <div class="container mt-4">
         @yield('content')
 
@@ -29,12 +32,13 @@
 
     @stack('styles')
     @stack('scripts')
-
+  
 
 <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     
     @RegisterServiceWorkerScript
     <script src="{{ asset('js/offline-db.js') }}"></script>
+  
 </body>
 </html>

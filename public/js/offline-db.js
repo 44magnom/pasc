@@ -4,7 +4,7 @@
 let db;
 
 const DB_NAME = "nafarbox";
-const DB_VERSION = 4;
+const DB_VERSION = 7;
 
 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -87,7 +87,20 @@ if (!db.objectStoreNames.contains("notes")) {
 
 }
 
+if (!db.objectStoreNames.contains('brouillons')) {
 
+    db.createObjectStore(
+        'brouillons',
+        {
+            keyPath: 'id'
+        }
+    );
+
+    console.log(
+        '✅ Store brouillons créé'
+    );
+
+}
 /*
 | Index ID
 */

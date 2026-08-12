@@ -1,5 +1,6 @@
 @extends('app')
 
+
 @section('content')
 
 <div class="card-body text-center">
@@ -8,7 +9,8 @@
         {{ $chapitre->matiere->matiere }}
     </h4>
 
-    <p class="mb-0" style="font-size:1.05rem; color:#654321;">
+    <p class="mb-0"
+       style="font-size:1.05rem; color:#654321;">
         {{ $chapitre->chapitre }}
     </p>
 
@@ -21,11 +23,16 @@
 
     @csrf
 
-    {{-- IDs --}}
+
+    {{-- =========================================================
+         IDS
+    ========================================================== --}}
+
     <input type="hidden"
            name="matiere_id"
            id="matiere_id"
            value="{{ $chapitre->matiere->id }}">
+
 
     <input type="hidden"
            name="chapitre_id"
@@ -33,50 +40,77 @@
            value="{{ $chapitre->id }}">
 
 
-    {{-- RECTO --}}
+    {{-- =========================================================
+         RECTO
+         Simple textarea
+    ========================================================== --}}
+
     <div class="mb-3">
 
-        <label for="recto" class="form-label">
+        <label for="recto"
+               class="form-label">
+
             Recto
+
         </label>
+
 
         <textarea
             id="recto"
             name="recto"
-            class="form-control @error('recto') is-invalid @enderror"
             rows="2"
+            class="form-control @error('recto') is-invalid @enderror"
+            placeholder="Ex. Qu'est-ce que la souveraineté ?"
             required>{{ old('recto') }}</textarea>
 
+
         @error('recto')
+
             <div class="invalid-feedback">
                 {{ $message }}
             </div>
+
         @enderror
 
     </div>
 
 
-    {{-- VERSO --}}
+    {{-- =========================================================
+         VERSO
+         CKEditor
+    ========================================================== --}}
+
     <div class="mb-3">
 
-        <label for="verso" class="form-label">
+        <label for="verso"
+               class="form-label">
+
             Verso
+
         </label>
+
 
         <textarea
             id="verso"
             name="verso"
-            class="form-control @error('verso') is-invalid @enderror"
-            rows="6">{{ old('verso') }}</textarea>
+            rows="6"
+            class="form-control @error('verso') is-invalid @enderror">{{ old('verso') }}</textarea>
+
 
         @error('verso')
+
             <div class="text-danger mt-1">
                 {{ $message }}
             </div>
+
         @enderror
 
     </div>
 
+
+    {{-- =========================================================
+         BOUTON
+    ========================================================== --}}
 
     <div class="text-end">
 
@@ -94,6 +128,7 @@
 @endsection
 
 
+
 @push('styles')
 
 <style>
@@ -107,157 +142,384 @@
 @endpush
 
 
+
 @push('scripts')
 
 <script>
 
-let versoEditor = null;
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
 
 
-/*
-|--------------------------------------------------------------------------
-| CKEDITOR
-|--------------------------------------------------------------------------
-*/
+        /*
+        |--------------------------------------------------------------------------
+        | CKEDITOR
+        |--------------------------------------------------------------------------
+        |
+        | SEUL LE VERSO utilise CKEditor.
+        |
+        */
 
-ClassicEditor
-    .create(document.querySelector('#verso'))
-    .then(editor => {
+        window.editorVerso = null;
 
-        versoEditor = editor;
 
-    })
-    .catch(error => {
+        ClassicEditor
+            .create(
+                document.querySelector('#verso')
+            )
+.then(
+    function (editor) {
 
-        console.error("Erreur CKEditor :", error);
+        window.editorVerso = editor;
+
+        console.log(
+            '✅ CKEditor Verso prêt'
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NOTE JUSTE CRÉÉE
+        |--------------------------------------------------------------------------
+        |
+        | Laravel nous indique que la note vient d'être créée.
+        | On vide immédiatement le formulaire.
+        |
+        */
+
+        @if(session('note_created'))
+
+            console.log(
+                '🧹 Nettoyage du formulaire après création'
+            );
+
+
+            const recto =
+                document.getElementById('recto');
+
+
+            if (recto) {
+
+                recto.value = '';
+
+            }
+
+
+            editor.setData('');
+
+        @endif
+
+    }
+)
+            .catch(
+                function (error) {
+
+                    console.error(
+                        '❌ Erreur CKEditor :',
+                        error
+                    );
+
+                }
+            );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FORMULAIRE
+        |--------------------------------------------------------------------------
+        */
+
+        const formNote =
+            document.getElementById(
+                'formNote'
+            );
+
+
+        if (!formNote) {
+
+            console.error(
+                '❌ Formulaire #formNote introuvable'
+            );
+
+            return;
+
+        }
+
+
+        formNote.addEventListener(
+            'submit',
+            async function (e) {
+
+
+                console.log(
+                    '🟢 Enregistrement demandé'
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | RECTO
+                |--------------------------------------------------------------------------
+                */
+
+                const recto =
+                    document
+                        .getElementById('recto')
+                        .value
+                        .trim();
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VERSO
+                |--------------------------------------------------------------------------
+                */
+
+                let verso = '';
+
+
+                if (window.editorVerso) {
+
+                    verso =
+                        window.editorVerso.getData();
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Synchroniser le textarea
+                |--------------------------------------------------------------------------
+                */
+
+                document
+                    .getElementById('verso')
+                    .value = verso;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Vérifier le Recto
+                |--------------------------------------------------------------------------
+                */
+
+                if (recto === '') {
+
+                    e.preventDefault();
+
+                    alert(
+                        'Veuillez saisir le recto de la note.'
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | EN LIGNE
+                |--------------------------------------------------------------------------
+                */
+
+                if (navigator.onLine) {
+
+                    /*
+                    | Laravel reçoit normalement le formulaire.
+                    |
+                    | Le brouillon sera supprimé sur la page
+                    | de redirection grâce à la session Laravel.
+                    */
+
+                    console.log(
+                        '🌐 En ligne → Laravel'
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | HORS LIGNE
+                |--------------------------------------------------------------------------
+                */
+
+                e.preventDefault();
+
+
+                console.log(
+                    '📴 Hors ligne → IndexedDB'
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | CRÉER LA NOTE LOCALE
+                |--------------------------------------------------------------------------
+                */
+
+                const note = {
+
+                    local_id:
+                        crypto.randomUUID(),
+
+                    matiere_id:
+                        document
+                            .getElementById(
+                                'matiere_id'
+                            )
+                            .value,
+
+                    chapitre_id:
+                        document
+                            .getElementById(
+                                'chapitre_id'
+                            )
+                            .value,
+
+                    recto:
+                        recto,
+
+                    verso:
+                        verso,
+
+                    nombre_revision:
+                        0,
+
+                    prochaine_revision:
+                        new Date()
+                            .toISOString()
+                            .split('T')[0],
+
+                    is_revised:
+                        true,
+
+                    is_synced:
+                        false,
+
+                    created_at:
+                        new Date()
+
+                };
+
+
+                console.log(
+                    '📦 Note hors connexion :',
+                    note
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | ENREGISTRER LA NOTE
+                |--------------------------------------------------------------------------
+                */
+
+                try {
+
+                    if (
+                        typeof saveOfflineNote !==
+                        'function'
+                    ) {
+
+                        throw new Error(
+                            'saveOfflineNote() est introuvable'
+                        );
+
+                    }
+
+
+                    await saveOfflineNote(
+                        note
+                    );
+
+
+                    console.log(
+                        '✅ Note enregistrée dans IndexedDB'
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        '❌ Erreur sauvegarde note :',
+                        error
+                    );
+
+
+                    alert(
+                        'Impossible d’enregistrer la note hors connexion.'
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | SUPPRIMER LE BROUILLON
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    typeof window.supprimerBrouillon ===
+                    'function'
+                ) {
+
+                    await window.supprimerBrouillon();
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | MESSAGE
+                |--------------------------------------------------------------------------
+                */
+
+                alert(
+                    'Votre note a été enregistrée hors connexion. ' +
+                    'Elle sera synchronisée automatiquement lorsque la connexion reviendra.'
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VIDER
+                |--------------------------------------------------------------------------
+                */
+
+                document
+                    .getElementById('recto')
+                    .value = '';
+
+
+                if (window.editorVerso) {
+
+                    window.editorVerso.setData('');
+
+                }
+
+            }
+        );
 
     });
 
-
-/*
-|--------------------------------------------------------------------------
-| FORMULAIRE
-|--------------------------------------------------------------------------
-*/
-
-document.getElementById("formNote").addEventListener("submit", function(e) {
-
-    /*
-    |--------------------------------------------------------------------------
-    | SI INTERNET EST DISPONIBLE
-    |--------------------------------------------------------------------------
-    |
-    | Laravel traite normalement le formulaire.
-    |
-    */
-
-    if (navigator.onLine) {
-
-        return;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HORS CONNEXION
-    |--------------------------------------------------------------------------
-    */
-
-    e.preventDefault();
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Récupérer le contenu CKEditor
-    |--------------------------------------------------------------------------
-    */
-
-    let verso = "";
-
-    if (versoEditor) {
-
-        verso = versoEditor.getData();
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Récupérer les données
-    |--------------------------------------------------------------------------
-    */
-
-    const note = {
-
-        local_id: crypto.randomUUID(),
-
-        matiere_id:
-            document.getElementById("matiere_id").value,
-
-        chapitre_id:
-            document.getElementById("chapitre_id").value,
-
-        recto:
-            document.getElementById("recto").value,
-
-        verso: verso,
-
-        nombre_revision: 0,
-
-        prochaine_revision:
-            new Date().toISOString().split("T")[0],
-
-        is_revised: true,
-
-        is_synced: false,
-
-        created_at: new Date()
-
-    };
-
-
-    console.log("📦 Note hors connexion :", note);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Enregistrer dans IndexedDB
-    |--------------------------------------------------------------------------
-    */
-
-    saveOfflineNote(note);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Message utilisateur
-    |--------------------------------------------------------------------------
-    */
-
-    alert(
-        "Votre note a été enregistrée hors connexion. " +
-        "Elle sera synchronisée automatiquement lorsque la connexion reviendra."
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Vider le formulaire
-    |--------------------------------------------------------------------------
-    */
-
-    document.getElementById("recto").value = "";
-
-
-    if (versoEditor) {
-
-        versoEditor.setData("");
-
-    }
-
-});
-
 </script>
 
+
+{{-- =============================================================
+     GESTION DES BROUILLONS
+============================================================= --}}
+
+@include('partials.brouillon-note')
+
 @endpush
+
+
