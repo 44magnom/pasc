@@ -30,6 +30,7 @@ $notes = Note::with('chapitre.matiere')
 public function revisionAnciennes()
 {
     $notes = Note::with('chapitre.matiere')
+       ->where('is_revised', true)
         ->whereDate('prochaine_revision', '<', today())
         ->inRandomOrder()
         ->get();

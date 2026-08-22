@@ -262,4 +262,7 @@ document.getElementById("formNote").addEventListener("submit", function(e){
 
 </script>
 
+
+@include('notes.partials.brouillon-note3')
+
 @endpush
