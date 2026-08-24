@@ -237,15 +237,14 @@ public function destroy($id)
         ->with('success', 'Note supprimée avec succès.');
 }
 
-public function toggle(Note $note)
+public function toggle(Request $request, Note $note)
 {
-    $note->is_revised = ! $note->is_revised;
+    $note->is_revised = $request->boolean('is_revised');
     $note->save();
 
-    return back()->with('success', 'Statut mis à jour.');
-}
-public function gererNote(Chapitre $chapitre)
-{
-    return view('notes.gerer', compact('chapitre'));
+    return response()->json([
+        'success' => true,
+        'is_revised' => $note->is_revised,
+    ]);
 }
 }

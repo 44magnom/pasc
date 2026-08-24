@@ -247,23 +247,14 @@
 
                     
                 </div> -->
-                <td class="text-center">
-    <form action="{{ route('notes.toggle', $note->id) }}"
-          method="POST"
-          onclick="event.stopPropagation();">
-
-        @csrf
-        @method('PATCH')
-
-        <input
-            type="checkbox"
-            class="form-check-input fs-5"
-            onchange="this.form.submit()"
-            {{ $note->is_revised ? 'checked' : '' }}>
-
-    </form>
-
-            </td>
+<td class="text-center">
+    <input
+        type="checkbox"
+        class="form-check-input fs-5 note-revision-checkbox"
+        data-note-id="{{ $note->id }}"
+        {{ $note->is_revised ? 'checked' : '' }}
+    >
+</td>
 
         </tr>
 
@@ -309,3 +300,59 @@
 
 
 @endPush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.note-revision-checkbox').forEach(function (checkbox) {
+
+        checkbox.addEventListener('change', function () {
+
+            const noteId = this.dataset.noteId;
+            const isRevised = this.checked;
+
+            // On désactive temporairement la checkbox
+            this.disabled = true;
+
+            fetch(`/notes/${noteId}/toggle`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    is_revised: isRevised
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur serveur');
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                console.log('Note mise à jour:', data);
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                // Si erreur, on remet la checkbox dans son état précédent
+                this.checked = !isRevised;
+
+                alert('Une erreur est survenue.');
+            })
+            .finally(() => {
+                this.disabled = false;
+            });
+
+        });
+
+    });
+
+});
+</script>
+@endpush
