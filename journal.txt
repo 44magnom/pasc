@@ -12,3 +12,7 @@ les reconstruires:
 php artisan route:cache
 php artisan config:cache
 php artisan view:cache
+
+composer require erag/laravel-pwa --no-scripts
+ cd ~/domains/nafarbox.com/public_html
+#Passer123

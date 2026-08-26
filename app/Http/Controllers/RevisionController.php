@@ -13,18 +13,26 @@ class RevisionController extends Controller
 
 public function revisionDuJour()
 {
-$notes = Note::with('chapitre.matiere')
-    ->where('is_revised', true)
-    ->whereDate('prochaine_revision', today())
-    ->whereHas('chapitre.matiere', function ($query) {
-        $query->where('user_id', auth()->id());
-    })
-    ->inRandomOrder()
-    ->get();
+    $notes = Note::with('chapitre.matiere')
+        ->where('notes.is_revised', true)
+        ->whereDate('notes.prochaine_revision', today())
+        ->whereHas('chapitre.matiere', function ($query) {
+            $query->where('user_id', auth()->id());
+        })
+        ->join('chapitres', 'notes.chapitre_id', '=', 'chapitres.id')
+        ->join('matieres', 'chapitres.matiere_id', '=', 'matieres.id')
+        ->orderBy('matieres.id', 'asc')
+        ->orderBy('chapitres.id', 'asc')
+        ->orderBy('notes.id', 'asc')
+        ->select('notes.*')
+        ->get();
 
     $typeRevision = 'jour';
 
-    return view('matieres.revisiongenerale', compact('notes', 'typeRevision'));
+    return view(
+        'matieres.revisiongenerale',
+        compact('notes', 'typeRevision')
+    );
 }
 
 public function revisionAnciennes()
@@ -63,7 +71,7 @@ public function chapitre($id)
 
     $notes = Note::with('chapitre.matiere')
                  ->where('chapitre_id', $id)
-                 ->inRandomOrder()
+                 ->orderBy('id', 'asc')
                  ->get();
 
     return view('matieres.revisiongenerale', compact('notes', 'chapitre'));

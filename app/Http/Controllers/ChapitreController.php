@@ -102,7 +102,7 @@ public function show($id)
     $chapitre = Chapitre::with([
         'matiere',
         'notes' => function ($query) {
-            $query->latest();
+            $query->orderBy('id', 'asc');
         }
     ])->findOrFail($id);
 
