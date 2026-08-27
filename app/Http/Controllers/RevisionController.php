@@ -38,17 +38,25 @@ public function revisionDuJour()
 public function revisionAnciennes()
 {
     $notes = Note::with('chapitre.matiere')
-        ->where('is_revised', true)
-        ->whereDate('prochaine_revision', '<', today())
+        ->where('notes.is_revised', true)
+        ->whereDate('notes.prochaine_revision', '<', today())
         ->whereHas('chapitre.matiere', function ($query) {
             $query->where('user_id', auth()->id());
         })
-        ->inRandomOrder()
+        ->join('chapitres', 'notes.chapitre_id', '=', 'chapitres.id')
+        ->join('matieres', 'chapitres.matiere_id', '=', 'matieres.id')
+        ->orderBy('matieres.id', 'asc')
+        ->orderBy('chapitres.id', 'asc')
+        ->orderBy('notes.id', 'asc')
+        ->select('notes.*')
         ->get();
 
     $typeRevision = 'anciennes';
 
-    return view('matieres.revisiongenerale', compact('notes', 'typeRevision'));
+    return view(
+        'matieres.revisiongenerale',
+        compact('notes', 'typeRevision')
+    );
 }
 
 public function show($id)

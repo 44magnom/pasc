@@ -13,6 +13,8 @@ php artisan route:cache
 php artisan config:cache
 php artisan view:cache
 
+$ ssh -p 65002 u649325368@72.60.93.230
+
 composer require erag/laravel-pwa --no-scripts
  cd ~/domains/nafarbox.com/public_html
 #Passer123
