@@ -15,7 +15,9 @@
         color: #654321;
     }
 
-    /* En-tête matière + chapitre */
+    /* ========================================================= */
+    /* EN-TÊTE MATIÈRE + CHAPITRE */
+    /* ========================================================= */
 
     .entete {
         text-align: center;
@@ -32,6 +34,11 @@
         font-size: 18px;
         color: #8B6B45;
     }
+
+
+    /* ========================================================= */
+    /* NOTES */
+    /* ========================================================= */
 
     #notes {
         display: grid;
@@ -57,6 +64,11 @@
         margin-top: 10px;
     }
 
+
+    /* ========================================================= */
+    /* RETOUR */
+    /* ========================================================= */
+
     .retour {
         display: inline-block;
         margin-bottom: 25px;
@@ -64,10 +76,20 @@
         text-decoration: none;
     }
 
+
+    /* ========================================================= */
+    /* MESSAGE */
+    /* ========================================================= */
+
     #message {
         text-align: center;
         margin-top: 20px;
     }
+
+
+    /* ========================================================= */
+    /* AJOUTER UNE NOTE */
+    /* ========================================================= */
 
     .ajouter {
         display: inline-block;
@@ -79,10 +101,23 @@
         text-decoration: none;
     }
 
+    .ajouter:hover {
+        opacity: 0.9;
+    }
+
 </style>
+
+
+<!-- ========================================================= -->
+<!-- FIL D'ARIANE -->
+<!-- ========================================================= -->
+
 <div id="breadcrumb"></div>
 
 
+<!-- ========================================================= -->
+<!-- RETOUR -->
+<!-- ========================================================= -->
 
 <a href="javascript:history.back()"
    class="retour">
@@ -105,6 +140,7 @@
         📚 Chargement...
 
     </div>
+
 
     <div
         id="nomChapitre"
@@ -131,10 +167,18 @@
 </a>
 
 
+<!-- ========================================================= -->
+<!-- TITRE -->
+<!-- ========================================================= -->
+
 <h2>
     📝 Notes
 </h2>
 
+
+<!-- ========================================================= -->
+<!-- LISTE DES NOTES -->
+<!-- ========================================================= -->
 
 <div id="notes"></div>
 
@@ -142,6 +186,7 @@
 <div id="message">
     Chargement...
 </div>
+
 
 
 <script>
@@ -156,6 +201,7 @@
         new URLSearchParams(
             window.location.search
         );
+
 
     const chapitreId =
         params.get('id');
@@ -185,19 +231,6 @@
 
     /*
     |--------------------------------------------------------------------------
-    | Lien Ajouter une note
-    |--------------------------------------------------------------------------
-    */
-
-    document.getElementById(
-        "btnAjouterNote"
-    ).href =
-        "/offlineView/creer-note.html?id=" +
-        chapitreId;
-
-
-    /*
-    |--------------------------------------------------------------------------
     | Ouvrir IndexedDB
     |--------------------------------------------------------------------------
     */
@@ -205,7 +238,7 @@
     const request =
         indexedDB.open(
             "nafarbox",
-7
+            8
         );
 
 
@@ -222,7 +255,9 @@
 
 
             /*
+            |--------------------------------------------------------------------------
             | Charger le chapitre
+            |--------------------------------------------------------------------------
             */
 
             chargerChapitre(
@@ -231,10 +266,23 @@
 
 
             /*
+            |--------------------------------------------------------------------------
             | Charger les notes
+            |--------------------------------------------------------------------------
             */
 
             chargerNotes(
+                db
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Configurer le bouton
+            |--------------------------------------------------------------------------
+            */
+
+            configurerBoutonAjouterNote(
                 db
             );
 
@@ -249,12 +297,289 @@
                 event.target.error
             );
 
+
             document.getElementById(
                 "message"
             ).textContent =
                 "❌ Impossible d'ouvrir la base locale.";
 
         };
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configurer le bouton Ajouter une note
+    |--------------------------------------------------------------------------
+    */
+
+    function configurerBoutonAjouterNote(db)
+    {
+
+        const bouton =
+            document.getElementById(
+                "btnAjouterNote"
+            );
+
+
+        if (!bouton) {
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Lire l'utilisateur
+        |--------------------------------------------------------------------------
+        */
+
+        const transactionUser =
+            db.transaction(
+                "user",
+                "readonly"
+            );
+
+
+        const userStore =
+            transactionUser.objectStore(
+                "user"
+            );
+
+
+        const requestUser =
+            userStore.getAll();
+
+
+        requestUser.onsuccess =
+            function () {
+
+                const users =
+                    requestUser.result;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Utilisateur introuvable
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !users ||
+                    users.length === 0
+                ) {
+
+                    console.error(
+                        "❌ Aucun utilisateur trouvé dans IndexedDB"
+                    );
+
+
+                    /*
+                    | Sécurité :
+                    | on ne laisse pas créer si le statut
+                    | de l'utilisateur est inconnu.
+                    */
+
+                    bouton.removeAttribute(
+                        "href"
+                    );
+
+
+                    bouton.onclick =
+                        function (event) {
+
+                            event.preventDefault();
+
+
+                            alert(
+                                "❌ Impossible de vérifier votre abonnement."
+                            );
+
+
+                            return false;
+
+                        };
+
+
+                    return;
+
+                }
+
+
+                const user =
+                    users[0];
+
+
+                console.log(
+                    "👤 Utilisateur offline :",
+                    user
+                );
+
+
+                console.log(
+                    "🔐 is_subscribed :",
+                    user.is_subscribed
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | UTILISATEUR ABONNÉ
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    Number(
+                        user.is_subscribed
+                    ) === 1
+                ) {
+
+                    bouton.href =
+                        "/offlineView/creer-note.html?id=" +
+                        chapitreId;
+
+
+                    bouton.onclick =
+                        null;
+
+
+                    console.log(
+                        "✅ Utilisateur abonné : création autorisée"
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | UTILISATEUR GRATUIT
+                |--------------------------------------------------------------------------
+                */
+
+                const transactionNotes =
+                    db.transaction(
+                        "notes",
+                        "readonly"
+                    );
+
+
+                const notesStore =
+                    transactionNotes.objectStore(
+                        "notes"
+                    );
+
+
+                const requestNotes =
+                    notesStore.getAll();
+
+
+                requestNotes.onsuccess =
+                    function () {
+
+                        const notes =
+                            requestNotes.result;
+
+
+                        const nombreNotes =
+                            notes.length;
+
+
+                        console.log(
+                            "📝 Nombre total de notes locales :",
+                            nombreNotes
+                        );
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | LIMITE ATTEINTE
+                        |--------------------------------------------------------------------------
+                        */
+
+                        if (
+                            nombreNotes >= 5
+                        ) {
+
+                            bouton.removeAttribute(
+                                "href"
+                            );
+
+
+                            bouton.onclick =
+                                function (event) {
+
+                                    event.preventDefault();
+
+
+                                    alert(
+                                        "Vous avez atteint le nombre maximum de 5 notes par chapitre pour la version gratuite. passez à la version prémium pour une meilleure expérience  "
+                                    );
+
+
+                                    return false;
+
+                                };
+
+
+                            console.log(
+                                "🆓 Limite de 5 notes atteinte"
+                            );
+
+
+                            return;
+
+                        }
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | ENCORE SOUS LA LIMITE
+                        |--------------------------------------------------------------------------
+                        */
+
+                        bouton.href =
+                            "/offlineView/creer-note.html?id=" +
+                            chapitreId;
+
+
+                        bouton.onclick =
+                            null;
+
+
+                        console.log(
+                            "🆓 Version gratuite : création autorisée"
+                        );
+
+                    };
+
+
+                requestNotes.onerror =
+                    function (event) {
+
+                        console.error(
+                            "❌ Erreur lecture notes :",
+                            event.target.error
+                        );
+
+                    };
+
+            };
+
+
+        requestUser.onerror =
+            function (event) {
+
+                console.error(
+                    "❌ Erreur lecture utilisateur :",
+                    event.target.error
+                );
+
+            };
+
+    }
 
 
     /*
@@ -300,10 +625,12 @@
                         chapitreId
                     );
 
+
                     document.getElementById(
                         "nomChapitre"
                     ).textContent =
                         "📖 Chapitre introuvable";
+
 
                     return;
 
@@ -317,7 +644,9 @@
 
 
                 /*
+                |--------------------------------------------------------------------------
                 | Afficher le nom du chapitre
+                |--------------------------------------------------------------------------
                 */
 
                 document.getElementById(
@@ -327,7 +656,9 @@
 
 
                 /*
+                |--------------------------------------------------------------------------
                 | Charger maintenant la matière
+                |--------------------------------------------------------------------------
                 */
 
                 chargerMatiere(
@@ -398,10 +729,12 @@
                         matiereId
                     );
 
+
                     document.getElementById(
                         "nomMatiere"
                     ).textContent =
                         "📚 Matière introuvable";
+
 
                     return;
 
@@ -529,10 +862,14 @@
         container.innerHTML = "";
 
 
-        if (notes.length === 0) {
+        if (
+            !notes ||
+            notes.length === 0
+        ) {
 
             message.textContent =
                 "Aucune note disponible hors connexion.";
+
 
             return;
 
@@ -581,45 +918,76 @@
     }
 
 </script>
+
+
+<!-- ========================================================= -->
+<!-- BREADCRUMB -->
+<!-- ========================================================= -->
+
 <script>
 
-fetch("/offlineView/breadcrumb.html")
-    .then(response => {
+fetch(
+    "/offlineView/breadcrumb.html"
+)
 
-        if (!response.ok) {
-            throw new Error(
-                "Erreur HTTP : " + response.status
-            );
+    .then(
+        response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Erreur HTTP : " +
+                    response.status
+                );
+
+            }
+
+
+            return response.text();
+
         }
+    )
 
-        return response.text();
+    .then(
+        html => {
 
-    })
-    .then(html => {
-
-        document.getElementById(
-            "breadcrumb"
-        ).innerHTML = html;
-
-        chargerBreadcrumb();
-
-    })
-    .catch(error => {
-
-        console.error(
-            "❌ Erreur breadcrumb :",
-            error
-        );
-
-    });
+            document.getElementById(
+                "breadcrumb"
+            ).innerHTML =
+                html;
 
 
-function chargerBreadcrumb() {
+            chargerBreadcrumb();
+
+        }
+    )
+
+    .catch(
+        error => {
+
+            console.error(
+                "❌ Erreur breadcrumb :",
+                error
+            );
+
+        }
+    );
+
+
+/*
+|--------------------------------------------------------------------------
+| Charger le breadcrumb
+|--------------------------------------------------------------------------
+*/
+
+function chargerBreadcrumb()
+{
 
     const params =
         new URLSearchParams(
             window.location.search
         );
+
 
     const chapitreId =
         params.get("id");
@@ -631,14 +999,22 @@ function chargerBreadcrumb() {
             "❌ ID chapitre absent"
         );
 
+
         return;
+
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ouvrir IndexedDB
+    |--------------------------------------------------------------------------
+    */
 
     const request =
         indexedDB.open(
             "nafarbox",
- 7
+            8
         );
 
 
@@ -687,7 +1063,9 @@ function chargerBreadcrumb() {
                             "❌ Chapitre introuvable"
                         );
 
+
                         return;
+
                     }
 
 
@@ -706,7 +1084,8 @@ function chargerBreadcrumb() {
                     document.getElementById(
                         "breadcrumbChapitre"
                     ).textContent =
-                        "📖 " + chapitre.chapitre;
+                        "📖 " +
+                        chapitre.chapitre;
 
 
                     /*
@@ -724,7 +1103,7 @@ function chargerBreadcrumb() {
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Récupérer la matière
+                    | Matière
                     |--------------------------------------------------------------------------
                     */
 
@@ -740,10 +1119,17 @@ function chargerBreadcrumb() {
 }
 
 
+/*
+|--------------------------------------------------------------------------
+| Charger la matière du breadcrumb
+|--------------------------------------------------------------------------
+*/
+
 function chargerBreadcrumbMatiere(
     db,
     matiereId
-) {
+)
+{
 
     const transaction =
         db.transaction(
@@ -765,7 +1151,8 @@ function chargerBreadcrumbMatiere(
 
 
     request.onsuccess =
-        function() {
+        function()
+        {
 
             const matiere =
                 request.result;
@@ -777,7 +1164,9 @@ function chargerBreadcrumbMatiere(
                     "❌ Matière introuvable"
                 );
 
+
                 return;
+
             }
 
 
@@ -796,12 +1185,13 @@ function chargerBreadcrumbMatiere(
             document.getElementById(
                 "breadcrumbMatiere"
             ).textContent =
-                "📚 " + matiere.matiere;
+                "📚 " +
+                matiere.matiere;
 
 
             /*
             |--------------------------------------------------------------------------
-            | Lien vers les chapitres de la matière
+            | Lien vers les chapitres
             |--------------------------------------------------------------------------
             */
 
@@ -810,6 +1200,136 @@ function chargerBreadcrumbMatiere(
             ).href =
                 "/offlineView/chapitres.html?id=" +
                 matiere.id;
+
+        };
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Récupérer utilisateur
+|--------------------------------------------------------------------------
+*/
+
+function recupererUtilisateur(callback)
+{
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ouvrir IndexedDB
+    |--------------------------------------------------------------------------
+    */
+
+    const request =
+        indexedDB.open(
+            "nafarbox",
+            8
+        );
+
+
+    request.onsuccess =
+        function(event)
+        {
+
+            const db =
+                event.target.result;
+
+
+            const transaction =
+                db.transaction(
+                    "user",
+                    "readonly"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    "user"
+                );
+
+
+            const userRequest =
+                store.getAll();
+
+
+            userRequest.onsuccess =
+                function()
+                {
+
+                    const users =
+                        userRequest.result;
+
+
+                    if (
+                        users.length === 0
+                    )
+                    {
+
+                        console.error(
+                            "❌ Aucun utilisateur trouvé dans IndexedDB"
+                        );
+
+
+                        callback(null);
+
+
+                        return;
+
+                    }
+
+
+                    const user =
+                        users[0];
+
+
+                    console.log(
+                        "👤 Utilisateur offline :",
+                        user
+                    );
+
+
+                    console.log(
+                        "🔐 is_subscribed :",
+                        user.is_subscribed
+                    );
+
+
+                    callback(
+                        user
+                    );
+
+                };
+
+
+            userRequest.onerror =
+                function(event)
+                {
+
+                    console.error(
+                        "❌ Erreur lecture utilisateur :",
+                        event.target.error
+                    );
+
+
+                    callback(null);
+
+                };
+
+        };
+
+
+    request.onerror =
+        function(event)
+        {
+
+            console.error(
+                "❌ Erreur ouverture IndexedDB :",
+                event.target.error
+            );
+
+
+            callback(null);
 
         };
 

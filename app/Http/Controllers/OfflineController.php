@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Note;
+use App\Models\Matiere;
+use App\Models\User;
 
 class OfflineController extends Controller
 {
@@ -14,6 +16,245 @@ class OfflineController extends Controller
     public function index()
     {
         //
+    }
+  public function synchroniserMatiere(Request $request)
+    {
+
+        try {
+
+
+            \Log::info(
+                'Synchronisation matière reçue',
+                $request->all()
+            );
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validation
+            |--------------------------------------------------------------------------
+            */
+
+            $request->validate([
+
+
+                'local_id' => [
+                    'required',
+                    'string'
+                ],
+
+
+                'matiere' => [
+                    'required',
+                    'string',
+                    'max:255'
+                ],
+
+
+                'user_id' => [
+                    'required',
+                    'exists:users,id'
+                ],
+
+
+            ]);
+
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Récupérer utilisateur
+            |--------------------------------------------------------------------------
+            */
+
+            $user = User::find(
+                $request->user_id
+            );
+
+
+
+            if (!$user) {
+
+
+                return response()->json([
+
+                    'success'=>false,
+
+                    'message'=>'Utilisateur introuvable'
+
+                ],404);
+
+
+            }
+
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Vérifier limite version gratuite
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !$user->is_subscribed
+            ) {
+
+
+                $nombreMatieres =
+                    $user->matieres()->count();
+
+
+
+                if (
+                    $nombreMatieres >= 3
+                ) {
+
+
+                    return response()->json([
+
+                        'success'=>false,
+
+                        'message'=>
+                            'Limite gratuite atteinte : maximum 3 matières.'
+
+                    ],403);
+
+
+                }
+
+
+            }
+
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Création matière
+            |--------------------------------------------------------------------------
+            */
+
+            $matiere =
+
+                $user->matieres()->create([
+
+                    'matiere' =>
+                        $request->matiere
+
+                ]);
+
+
+
+
+
+
+            \Log::info(
+
+                'Matière créée avec succès',
+
+                [
+
+                    'id' =>
+                        $matiere->id,
+
+
+                    'user_id' =>
+                        $matiere->user_id
+
+                ]
+
+            );
+
+
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Retour vers IndexedDB
+            |--------------------------------------------------------------------------
+            */
+
+            return response()->json([
+
+
+                'success'=>true,
+
+
+                'local_id'=>
+                    $request->local_id,
+
+
+
+                'matiere'=>[
+
+
+                    'id'=>
+                        $matiere->id,
+
+
+                    'matiere'=>
+                        $matiere->matiere,
+
+
+                    'user_id'=>
+                        $matiere->user_id
+
+
+                ]
+
+
+            ]);
+
+
+
+
+
+        }
+        catch(\Throwable $e) {
+
+
+            \Log::error(
+
+                'Erreur synchronisation matière',
+
+                [
+
+                    'message'=>
+                        $e->getMessage(),
+
+
+                    'line'=>
+                        $e->getLine()
+
+                ]
+
+            );
+
+
+
+            return response()->json([
+
+                'success'=>false,
+
+                'message'=>
+                    $e->getMessage()
+
+
+            ],500);
+
+
+
+        }
+
+
     }
 
     /**
@@ -106,7 +347,7 @@ public function store(Request $request)
         //
     }
 
-    public function sync()
+  public function sync()
 {
     $user = auth()->user();
 
@@ -123,6 +364,16 @@ public function store(Request $request)
 
     return response()->json([
         'success' => true,
+
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'telephone' => $user->telephone,
+            'email' => $user->email,
+            'is_active' => $user->is_active,
+            'is_subscribed' => $user->is_subscribed,
+        ],
+
         'matieres' => $matieres,
     ]);
 }

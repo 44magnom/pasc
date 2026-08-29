@@ -52,69 +52,271 @@
         }
 
     </style>
-<script src="/offlineView/partials/liste-brouillons.js"></script>
 
+
+    <script src="/offlineView/partials/liste-brouillons.js"></script>
+<script src="/offlineView/partials/offline-matieres.js"></script>
 </head>
 
+
 <body>
+
+    <!-- ========================================================= -->
+    <!-- BREADCRUMB -->
+    <!-- ========================================================= -->
+
     <div id="breadcrumb"></div>
 
-<div id="listeBrouillonsContainer"></div>
 
-    <h1>📚 Mes matières</h1>
+    <!-- ========================================================= -->
+    <!-- BROUILLONS -->
+    <!-- ========================================================= -->
+
+    <div id="listeBrouillonsContainer"></div>
+
+
+    <!-- ========================================================= -->
+    <!-- TITRE -->
+    <!-- ========================================================= -->
+
+    <h1>
+        📚 Mes matières
+    </h1>
+
+
+    <!-- ========================================================= -->
+    <!-- BOUTON / FORMULAIRE AJOUT MATIÈRE -->
+    <!-- ========================================================= -->
+
+    <div id="ajouterMatiereContainer"></div>
+
+
+    <!-- ========================================================= -->
+    <!-- LISTE DES MATIÈRES -->
+    <!-- ========================================================= -->
 
     <div id="matieres"></div>
+
 
     <div id="message">
         Chargement...
     </div>
 
 
+
+    <!-- ========================================================= -->
+    <!-- CHARGER AJOUTER MATIÈRE -->
+    <!-- ========================================================= -->
+
     <script>
 
-        /*
-        |--------------------------------------------------------------------------
-        | OUVRIR INDEXEDDB
-        |--------------------------------------------------------------------------
-        */
+        fetch(
+            "/offlineView/ajouterMatiere.html"
+        )
+
+        .then(
+            response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Erreur HTTP : " +
+                        response.status
+                    );
+
+                }
+
+                return response.text();
+
+            }
+        )
+
+        .then(
+            html => {
+
+                const container =
+                    document.getElementById(
+                        "ajouterMatiereContainer"
+                    );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Insérer le HTML
+                |--------------------------------------------------------------------------
+                */
+
+                container.innerHTML =
+                    html;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Exécuter les scripts
+                |--------------------------------------------------------------------------
+                */
+
+                const scripts =
+                    container.querySelectorAll(
+                        "script"
+                    );
+
+
+                scripts.forEach(
+                    function (oldScript) {
+
+                        const newScript =
+                            document.createElement(
+                                "script"
+                            );
+
+
+                        /*
+                        | Copier le contenu
+                        */
+
+                        if (
+                            oldScript.textContent
+                        ) {
+
+                            newScript.textContent =
+                                oldScript.textContent;
+
+                        }
+
+
+                        /*
+                        | Copier un éventuel src
+                        */
+
+                        if (
+                            oldScript.src
+                        ) {
+
+                            newScript.src =
+                                oldScript.src;
+
+                        }
+
+
+                        document.body.appendChild(
+                            newScript
+                        );
+
+                    }
+                );
+
+            }
+        )
+
+        .catch(
+            error => {
+
+                console.error(
+                    "❌ Erreur chargement ajouterMatiere :",
+                    error
+                );
+
+            }
+        );
+
+    </script>
+
+
+
+    <!-- ========================================================= -->
+    <!-- INDEXEDDB -->
+    <!-- ========================================================= -->
+
+    <script>
 
         const request =
-            indexedDB.open("nafarbox", 7);
-
-
-        request.onsuccess = function (event) {
-
-            const db = event.target.result;
-
-            console.log(
-                "✅ IndexedDB ouverte"
+            indexedDB.open(
+                "nafarbox",
+                8
             );
-
-            chargerMatieres(db);
-
-        };
-
-
-        request.onerror = function (event) {
-
-            console.error(
-                "❌ Erreur IndexedDB :",
-                event.target.error
-            );
-
-            document.getElementById('message').textContent =
-                "Impossible d'ouvrir la base locale.";
-
-        };
 
 
         /*
         |--------------------------------------------------------------------------
-        | RECUPERER LES MATIERES
+        | BASE OUVERTE
         |--------------------------------------------------------------------------
         */
 
-        function chargerMatieres(db)
+        request.onsuccess =
+            function (event) {
+
+                const db =
+                    event.target.result;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | IMPORTANT
+                |--------------------------------------------------------------------------
+                | Rendre la connexion disponible aux autres scripts
+                |--------------------------------------------------------------------------
+                */
+
+                window.offlineDB =
+                    db;
+
+
+                console.log(
+                    "✅ IndexedDB ouverte"
+                );
+
+
+                console.log(
+                    "📦 Base disponible pour les autres scripts"
+                );
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Charger les matières
+                |--------------------------------------------------------------------------
+                */
+
+                chargerMatieres(
+                    db
+                );
+
+            };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ERREUR
+        |--------------------------------------------------------------------------
+        */
+
+        request.onerror =
+            function (event) {
+
+                console.error(
+                    "❌ Erreur IndexedDB :",
+                    event.target.error
+                );
+
+
+                document.getElementById(
+                    "message"
+                ).textContent =
+                    "Impossible d'ouvrir la base locale.";
+
+            };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RÉCUPÉRER LES MATIÈRES
+        |--------------------------------------------------------------------------
+        */
+
+        function chargerMatieres(
+            db
+        )
         {
 
             const transaction =
@@ -125,65 +327,86 @@
 
 
             const store =
-                transaction.objectStore("matieres");
+                transaction.objectStore(
+                    "matieres"
+                );
 
 
             const request =
                 store.getAll();
 
 
-            request.onsuccess = function ()
-            {
+            request.onsuccess =
+                function ()
+                {
 
-                const matieres =
-                    request.result;
-
-
-                console.log(
-                    "📚 Matières trouvées :",
-                    matieres
-                );
+                    const matieres =
+                        request.result;
 
 
-                afficherMatieres(matieres);
+                    console.log(
+                        "📚 Matières trouvées :",
+                        matieres
+                    );
 
-            };
+
+                    afficherMatieres(
+                        matieres
+                    );
+
+                };
 
 
-            request.onerror = function (event)
-            {
+            request.onerror =
+                function (event)
+                {
 
-                console.error(
-                    "❌ Erreur lecture matières :",
-                    event.target.error
-                );
+                    console.error(
+                        "❌ Erreur lecture matières :",
+                        event.target.error
+                    );
 
-            };
+                };
 
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | AFFICHER LES MATIERES
+        | AFFICHER LES MATIÈRES
         |--------------------------------------------------------------------------
         */
 
-        function afficherMatieres(matieres)
+        function afficherMatieres(
+            matieres
+        )
         {
 
             const container =
-                document.getElementById('matieres');
+                document.getElementById(
+                    "matieres"
+                );
 
 
             const message =
-                document.getElementById('message');
+                document.getElementById(
+                    "message"
+                );
 
 
-            container.innerHTML = "";
+            container.innerHTML =
+                "";
 
 
-            if (matieres.length === 0) {
+            /*
+            |--------------------------------------------------------------------------
+            | Aucune matière
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                matieres.length === 0
+            ) {
 
                 message.textContent =
                     "Aucune matière disponible hors connexion.";
@@ -193,70 +416,138 @@
             }
 
 
+            /*
+            |--------------------------------------------------------------------------
+            | Nombre de matières
+            |--------------------------------------------------------------------------
+            */
+
             message.textContent =
                 matieres.length +
                 " matière(s) disponible(s).";
 
 
-            matieres.forEach(function (matiere)
-            {
+            /*
+            |--------------------------------------------------------------------------
+            | Parcourir
+            |--------------------------------------------------------------------------
+            */
 
-                const lien =
-                    document.createElement('a');
+            matieres.forEach(
+                function (matiere)
+                {
 
-
-                lien.className =
-                    "matiere";
-
-
-                lien.textContent =
-                    "📚 " + matiere.matiere;
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | POUR LA PROCHAINE ETAPE
-                |--------------------------------------------------------------------------
-                |
-                | On met déjà l'ID de la matière.
-                |
-                */
-
-                lien.dataset.id =
-                    matiere.id;
+                    const lien =
+                        document.createElement(
+                            "a"
+                        );
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | On ne définit pas encore le lien.
-                |--------------------------------------------------------------------------
-                */
-
-               lien.href ="/offlineView/chapitres.html?id=" + matiere.id;
+                    lien.className =
+                        "matiere";
 
 
-                container.appendChild(lien);
+                    lien.textContent =
+                        "📚 " +
+                        matiere.matiere;
 
-            });
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ID matière
+                    |--------------------------------------------------------------------------
+                    */
+
+                    lien.dataset.id =
+                        matiere.id;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Lien vers les chapitres
+                    |--------------------------------------------------------------------------
+                    */
+
+                    lien.href =
+                        "/offlineView/chapitres.html?id=" +
+                        matiere.id;
+
+
+                    container.appendChild(
+                        lien
+                    );
+
+                }
+            );
 
         }
 
     </script>
-<script>
 
-fetch("/offlineView/breadcrumb.html")
-    .then(response => response.text())
-    .then(html => {
 
-        document.getElementById(
-            "breadcrumb"
-        ).innerHTML = html;
 
-        initialiserBreadcrumb();
+    <!-- ========================================================= -->
+    <!-- BREADCRUMB -->
+    <!-- ========================================================= -->
 
-    });
+    <script>
 
-</script>
+        fetch(
+            "/offlineView/breadcrumb.html"
+        )
+
+        .then(
+            response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Erreur HTTP : " +
+                        response.status
+                    );
+
+                }
+
+                return response.text();
+
+            }
+        )
+
+        .then(
+            html => {
+
+                document.getElementById(
+                    "breadcrumb"
+                ).innerHTML =
+                    html;
+
+
+                if (
+                    typeof initialiserBreadcrumb ===
+                    "function"
+                ) {
+
+                    initialiserBreadcrumb();
+
+                }
+
+            }
+        )
+
+        .catch(
+            error => {
+
+                console.error(
+                    "❌ Erreur breadcrumb :",
+                    error
+                );
+
+            }
+        );
+
+    </script>
+
+
 </body>
 
 </html>

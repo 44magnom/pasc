@@ -98,13 +98,113 @@ fetch("/offlineView/breadcrumb.html")
     <h1>📖 Chapitres</h1>
 
     <div id="nom-matiere"></div>
+<div style="text-align:center;margin-bottom:20px;">
 
+    <button
+        id="btnAjouterChapitre"
+        class="btn-ajouter-chapitre"
+    >
+        ➕ Ajouter un chapitre
+    </button>
+
+</div>
+
+
+<div id="ajouterChapitreContainer"></div>
+<style>
+    .btn-ajouter-chapitre {
+
+    padding:10px 18px;
+
+    background:#654321;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+}
+
+
+.btn-ajouter-chapitre:hover {
+
+    opacity:0.9;
+
+}
+</style>
     <div id="chapitres"></div>
 
     <div id="message">
         Chargement...
     </div>
+<script>
 
+
+document
+.getElementById("btnAjouterChapitre")
+.addEventListener(
+"click",
+function(){
+
+
+fetch(
+"/offlineView/partials/ajouterChapitre.html"
+)
+
+.then(response=>response.text())
+
+.then(html=>{
+
+
+const container =
+document.getElementById(
+"ajouterChapitreContainer"
+);
+
+
+container.innerHTML = html;
+
+
+
+/*
+Exécuter les scripts du partial
+*/
+
+container
+.querySelectorAll("script")
+.forEach(
+function(oldScript){
+
+
+const script =
+document.createElement("script");
+
+
+script.textContent =
+oldScript.textContent;
+
+
+document.body.appendChild(
+script
+);
+
+
+});
+
+
+
+});
+
+
+});
+
+
+</script>
 
     <script>
 
@@ -146,7 +246,7 @@ fetch("/offlineView/breadcrumb.html")
         */
 
         const request =
-            indexedDB.open("nafarbox", 7);
+            indexedDB.open("nafarbox", 8);
 
 
         request.onsuccess = function (event) {

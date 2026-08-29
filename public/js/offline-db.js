@@ -4,7 +4,7 @@
 let db;
 
 const DB_NAME = "nafarbox";
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -102,6 +102,22 @@ if (!db.objectStoreNames.contains('brouillons')) {
 
 }
 /*
+|--------------------------------------------------------------------------
+| UTILISATEUR
+|--------------------------------------------------------------------------
+*/
+
+if (!db.objectStoreNames.contains("user")) {
+
+    db.createObjectStore("user", {
+        keyPath: "id"
+    });
+
+    console.log(
+        "✅ Store user créé"
+    );
+}
+/*
 | Index ID
 */
 
@@ -191,10 +207,13 @@ if (!notesStore.indexNames.contains("is_synced")) {
 request.onsuccess = function (event) {
 
     db = event.target.result;
+    window.offlineDB = db;
 
     console.log("✅ Base locale prête.");
 
-
+window.dispatchEvent(
+    new Event("offlineDBReady")
+);
     if (navigator.onLine) {
 
         /*
@@ -814,14 +833,17 @@ async function synchroniserStructureDepuisServeur()
         |--------------------------------------------------------------------------
         */
 
-        const transaction = db.transaction(
-            [
-                "matieres",
-                "chapitres",
-                "notes"
-            ],
-            "readwrite"
-        );
+const transaction = db.transaction(
+    [
+        "user",
+        "matieres",
+        "chapitres",
+        "notes"
+    ],
+    "readwrite"
+);
+const userStore =
+    transaction.objectStore("user");
 
         const matieresStore =
             transaction.objectStore("matieres");
@@ -838,6 +860,30 @@ async function synchroniserStructureDepuisServeur()
         | MATIERES
         |--------------------------------------------------------------------------
         */
+
+        if (data.user) {
+
+    userStore.put({
+
+        id: data.user.id,
+
+        name: data.user.name,
+
+        telephone: data.user.telephone,
+
+        email: data.user.email,
+
+        is_active: data.user.is_active,
+
+        is_subscribed: data.user.is_subscribed
+
+    });
+
+    console.log(
+        "👤 Utilisateur enregistré dans IndexedDB :",
+        data.user
+    );
+}
 
         for (const matiere of data.matieres) {
 

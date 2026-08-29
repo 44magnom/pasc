@@ -17,7 +17,7 @@
 
     const DB_NAME = 'nafarbox';
 
-    const DB_VERSION = 7;
+    const DB_VERSION = 8;
 
     const STORE_NAME = 'brouillons';
 

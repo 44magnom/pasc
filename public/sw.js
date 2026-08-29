@@ -25,6 +25,8 @@ const FILES_TO_CACHE = [
       '/offlineView/ckeditor/ckeditor.js',
          '/offlineView/partials/brouillon-note.js',
          '/offlineView/partials/liste-brouillons.js',
+         "/offlineView/partials/offline-matieres.js",
+         "/offlineView/ajouterMatiere.html",
 
     "/offline.html"
 

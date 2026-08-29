@@ -9,7 +9,7 @@
     | Ta base principale est déjà en version 7.
     */
 
-    const DB_VERSION = 7;
+    const DB_VERSION = 8;
 
     const STORE_NAME = 'brouillons';
 

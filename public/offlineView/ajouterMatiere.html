@@ -1,0 +1,822 @@
+<style>
+
+    .btn-ajouter-matiere {
+        display: inline-block;
+        padding: 10px 18px;
+        background: #654321;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn-ajouter-matiere:hover {
+        opacity: 0.9;
+    }
+
+
+    #formAjoutMatiere {
+        display: none;
+        background: white;
+        border: 1px solid #D2B48C;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 15px;
+        margin-bottom: 25px;
+    }
+
+
+    #nouvelleMatiere {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px;
+        border: 1px solid #D2B48C;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+    }
+
+
+    #nouvelleMatiere:focus {
+        border-color: #654321;
+    }
+
+
+    .matiere-actions {
+        margin-top: 15px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+
+    .btn-annuler-matiere {
+        padding: 9px 15px;
+        background: #eee;
+        color: #555;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+    }
+
+
+    .btn-enregistrer-matiere {
+        padding: 9px 15px;
+        background: #654321;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+    }
+
+
+    #messageMatiereOffline {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #654321;
+    }
+
+</style>
+
+
+<!-- ========================================================= -->
+<!-- BOUTON -->
+<!-- ========================================================= -->
+
+<div style="text-align:center; margin-bottom:20px;">
+
+    <button
+        type="button"
+        id="btnAjouterMatiere"
+        class="btn-ajouter-matiere"
+    >
+        ➕ Ajouter une matière
+    </button>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- FORMULAIRE -->
+<!-- ========================================================= -->
+
+<div id="formAjoutMatiere">
+
+    <label
+        for="nouvelleMatiere"
+        style="
+            display:block;
+            margin-bottom:8px;
+            font-weight:bold;
+            color:#654321;
+        "
+    >
+        Nom de la matière
+    </label>
+
+
+    <input
+        type="text"
+        id="nouvelleMatiere"
+        placeholder="Ex : Droit administratif"
+        autocomplete="off"
+    >
+
+
+    <div id="messageMatiereOffline"></div>
+
+
+    <div class="matiere-actions">
+
+        <button
+            type="button"
+            id="btnAnnulerMatiere"
+            class="btn-annuler-matiere"
+        >
+            Annuler
+        </button>
+
+
+        <button
+            type="button"
+            id="btnEnregistrerMatiere"
+            class="btn-enregistrer-matiere"
+        >
+            💾 Enregistrer
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | ÉLÉMENTS
+    |--------------------------------------------------------------------------
+    */
+
+    const btnAjouter =
+        document.getElementById(
+            "btnAjouterMatiere"
+        );
+
+
+    const form =
+        document.getElementById(
+            "formAjoutMatiere"
+        );
+
+
+    const btnAnnuler =
+        document.getElementById(
+            "btnAnnulerMatiere"
+        );
+
+
+    const btnEnregistrer =
+        document.getElementById(
+            "btnEnregistrerMatiere"
+        );
+
+
+    const input =
+        document.getElementById(
+            "nouvelleMatiere"
+        );
+
+
+    const message =
+        document.getElementById(
+            "messageMatiereOffline"
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | OUVRIR LE FORMULAIRE
+    |--------------------------------------------------------------------------
+    */
+
+    btnAjouter.addEventListener(
+        "click",
+        function () {
+
+            form.style.display = "block";
+
+            input.focus();
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ANNULER
+    |--------------------------------------------------------------------------
+    */
+
+    btnAnnuler.addEventListener(
+        "click",
+        function () {
+
+            form.style.display = "none";
+
+            input.value = "";
+
+            message.textContent = "";
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ATTENDRE INDEXEDDB
+    |--------------------------------------------------------------------------
+    */
+
+    function attendreBaseLocale(callback) {
+
+        if (window.offlineDB) {
+
+            callback(
+                window.offlineDB
+            );
+
+            return;
+        }
+
+
+        message.textContent =
+            "⏳ Préparation de la base locale...";
+
+
+        setTimeout(
+            function () {
+
+                attendreBaseLocale(
+                    callback
+                );
+
+            },
+            200
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENREGISTRER LA MATIÈRE
+    |--------------------------------------------------------------------------
+    */
+
+function enregistrerMatiere(db) {
+
+    if (!db) {
+
+        message.textContent =
+            "❌ Base locale indisponible.";
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vérifier les stores
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !db.objectStoreNames.contains("matieres") ||
+        !db.objectStoreNames.contains("user") ||
+        !db.objectStoreNames.contains("sync_queue")
+    ) {
+
+        message.textContent =
+            "❌ La base locale n'est pas correctement configurée.";
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Récupérer le nom
+    |--------------------------------------------------------------------------
+    */
+
+    const nom =
+        input.value.trim();
+
+
+    if (!nom) {
+
+        message.textContent =
+            "❌ Veuillez saisir le nom de la matière.";
+
+        input.focus();
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RÉCUPÉRER L'UTILISATEUR
+    |--------------------------------------------------------------------------
+    */
+
+    const transactionUser =
+        db.transaction(
+            "user",
+            "readonly"
+        );
+
+
+    const userStore =
+        transactionUser.objectStore(
+            "user"
+        );
+
+
+    const requestUser =
+        userStore.getAll();
+
+
+    requestUser.onsuccess =
+        function () {
+
+            const users =
+                requestUser.result;
+
+
+            if (
+                !users ||
+                users.length === 0
+            ) {
+
+                message.textContent =
+                    "❌ Utilisateur local introuvable.";
+
+                console.error(
+                    "❌ Aucun utilisateur dans IndexedDB"
+                );
+
+                return;
+            }
+
+
+            const user =
+                users[0];
+
+
+            console.log(
+                "👤 Utilisateur local :",
+                user
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | SI ABONNÉ → ILLIMITÉ
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                Number(user.is_subscribed) === 1
+            ) {
+
+                console.log(
+                    "✅ Utilisateur abonné : aucune limite de matières."
+                );
+
+
+                creerMatiere(
+                    db,
+                    user,
+                    nom
+                );
+
+
+                return;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | VERSION GRATUITE → COMPTER LES MATIÈRES
+            |--------------------------------------------------------------------------
+            */
+
+            const transactionMatieres =
+                db.transaction(
+                    "matieres",
+                    "readonly"
+                );
+
+
+            const matieresStore =
+                transactionMatieres.objectStore(
+                    "matieres"
+                );
+
+
+            const requestMatieres =
+                matieresStore.getAll();
+
+
+            requestMatieres.onsuccess =
+                function () {
+
+                    const matieres =
+                        requestMatieres.result;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Compter uniquement les matières de l'utilisateur
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const mesMatieres =
+                        matieres.filter(
+                            function (matiere) {
+
+                                return Number(
+                                    matiere.user_id
+                                ) === Number(
+                                    user.id
+                                );
+
+                            }
+                        );
+
+
+                    const nombreMatieres =
+                        mesMatieres.length;
+
+
+                    console.log(
+                        "📚 Nombre de matières de l'utilisateur :",
+                        nombreMatieres
+                    );
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | LIMITE DE 3
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        nombreMatieres >= 3
+                    ) {
+
+                        message.textContent =
+                            "❌ Vous avez atteint la limite de 3 matières de la version gratuite.";
+
+
+                        alert(
+                            "Vous avez atteint la limite de 3 matières pour la version gratuite."
+                        );
+
+
+                        return;
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | AUTORISER
+                    |--------------------------------------------------------------------------
+                    */
+
+                    creerMatiere(
+                        db,
+                        user,
+                        nom
+                    );
+
+                };
+
+
+            requestMatieres.onerror =
+                function (event) {
+
+                    console.error(
+                        "❌ Erreur lecture matières :",
+                        event.target.error
+                    );
+
+
+                    message.textContent =
+                        "❌ Impossible de vérifier le nombre de matières.";
+
+                };
+
+        };
+
+
+    requestUser.onerror =
+        function (event) {
+
+            console.error(
+                "❌ Erreur lecture utilisateur :",
+                event.target.error
+            );
+
+
+            message.textContent =
+                "❌ Impossible de récupérer votre compte.";
+
+        };
+
+}
+function creerMatiere(
+    db,
+    user,
+    nom
+) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | ID LOCAL
+    |--------------------------------------------------------------------------
+    */
+
+    const localId =
+        "offline-" +
+        crypto.randomUUID();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MATIÈRE
+    |--------------------------------------------------------------------------
+    */
+
+    const matiere = {
+
+        id:
+            localId,
+
+        matiere:
+            nom,
+
+        user_id:
+            user.id,
+
+        is_synced:
+            false,
+
+        created_at:
+            new Date().toISOString()
+
+    };
+
+
+    console.log(
+        "📚 Création de la matière :",
+        matiere
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRANSACTION
+    |--------------------------------------------------------------------------
+    */
+
+    let transaction;
+
+
+    try {
+
+        transaction =
+            db.transaction(
+                [
+                    "matieres",
+                    "sync_queue"
+                ],
+                "readwrite"
+            );
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ Erreur transaction :",
+            error
+        );
+
+
+        message.textContent =
+            "❌ Impossible d'ouvrir la transaction.";
+
+        return;
+    }
+
+
+    const matieresStore =
+        transaction.objectStore(
+            "matieres"
+        );
+
+
+    const queueStore =
+        transaction.objectStore(
+            "sync_queue"
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENREGISTRER LA MATIÈRE
+    |--------------------------------------------------------------------------
+    */
+
+    matieresStore.put(
+        matiere
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILE DE SYNCHRONISATION
+    |--------------------------------------------------------------------------
+    */
+
+    queueStore.add({
+
+        table:
+            "matieres",
+
+        action:
+            "create",
+
+        local_id:
+            localId,
+
+        data:
+            matiere,
+
+        created_at:
+            new Date().toISOString()
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FIN
+    |--------------------------------------------------------------------------
+    */
+
+    transaction.oncomplete =
+        function () {
+
+            console.log(
+                "✅ Matière créée hors ligne :",
+                matiere
+            );
+
+
+            console.log(
+                "📦 Matière ajoutée à la file de synchronisation"
+            );
+
+
+            message.textContent =
+                "✅ Matière enregistrée hors connexion.";
+
+
+            input.value =
+                "";
+
+
+            setTimeout(
+                function () {
+
+                    form.style.display =
+                        "none";
+
+                    message.textContent =
+                        "";
+
+
+                    /*
+                    | Recharger les matières
+                    */
+
+                    if (
+                        typeof window.chargerMatieres ===
+                        "function"
+                    ) {
+
+                        window.chargerMatieres();
+
+                    }
+
+                },
+                500
+            );
+
+        };
+
+
+    transaction.onerror =
+        function (event) {
+
+            console.error(
+                "❌ Erreur création matière :",
+                event.target.error
+            );
+
+
+            message.textContent =
+                "❌ La matière n'a pas pu être enregistrée.";
+
+        };
+
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOUTON ENREGISTRER
+    |--------------------------------------------------------------------------
+    */
+
+    btnEnregistrer.addEventListener(
+        "click",
+        function () {
+
+            const nom =
+                input.value.trim();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Vérifier le nom
+            |--------------------------------------------------------------------------
+            */
+
+            if (!nom) {
+
+                message.textContent =
+                    "❌ Veuillez saisir le nom de la matière.";
+
+                input.focus();
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | IndexedDB prête ?
+            |--------------------------------------------------------------------------
+            */
+
+            if (!window.offlineDB) {
+
+                attendreBaseLocale(
+                    function (db) {
+
+                        enregistrerMatiere(
+                            db
+                        );
+
+                    }
+                );
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Enregistrer directement
+            |--------------------------------------------------------------------------
+            */
+
+            enregistrerMatiere(
+                window.offlineDB
+            );
+
+        }
+    );
+
+
+})();
+
+</script>

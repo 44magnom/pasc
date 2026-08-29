@@ -39,6 +39,6 @@
     
     @RegisterServiceWorkerScript
     <script src="{{ asset('js/offline-db.js') }}"></script>
-  
+  <script src="/offlineView/partials/offline-matieres.js"></script>
 </body>
 </html>

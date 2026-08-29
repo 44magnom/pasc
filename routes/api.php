@@ -34,3 +34,8 @@ Route::middleware('auth')->get('/offline/sync', [
     OfflineController::class,
     'sync'
 ]);
+
+Route::post(
+    '/offline/matiere',
+    [OfflineController::class, 'synchroniserMatiere']
+)->name('offline.matiere');
